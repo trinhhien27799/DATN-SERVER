@@ -1,7 +1,7 @@
 
 const router = require('express').Router()
-const controller = require('../controller/user.controller')
-const upload = require('../ultils/handleFile')
+const controller = require('../../controller/api/user.controller')
+const upload = require('../../ultils/handleFile')
 
 router.post('/receive-otp', controller.insertOtp)
 router.post('/verify-otp', controller.verifyOtp)

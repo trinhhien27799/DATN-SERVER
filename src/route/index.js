@@ -1,4 +1,4 @@
-const users = require('./user.route')
+const users = require('./api/user.route')
 
 function route(app) {
     app.get('/', (req, res) => {

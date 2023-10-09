@@ -1,12 +1,12 @@
 require('dotenv').config()
-const User = require('../model/user')
-const Otp = require('../model/otp')
+const User = require('../../model/user')
+const Otp = require('../../model/otp')
 const otpGenerator = require('otp-generator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const SECRECT = process.env.SECRECT
-const { sendEmail } = require('../ultils/emailSender')
-const { uploadImage, deleteImage } = require('../ultils/uploadImage')
+const { sendEmail } = require('../../ultils/emailSender')
+const { uploadImage, deleteImage } = require('../../ultils/uploadImage')
 const { json } = require('express')
 
 class ApiController {

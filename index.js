@@ -36,6 +36,8 @@ router(app)
 
 
 app.listen(PORT, () => {
+
+    console.log(path.join(__dirname, 'src/public'))
     console.log(`>>> Gửi otp  POST {username: String,forgotPassword:boolean }  
         http://localhost:${PORT}/api/user/receive-otp`)
 

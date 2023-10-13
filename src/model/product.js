@@ -8,6 +8,7 @@ const Product = new Schema({
     brand_name: { type: String, require: true },
     description: { type: String },
     default_price: { type: Number, require: true },
+    max_price: { type: Number },
     image_preview: { type: String, require: true },
     options: {
         colors: [{
@@ -23,7 +24,8 @@ const Product = new Schema({
             size: { type: String },
             increase_price: { type: Number, default: 0 }
         }]
-    }
+    },
+    time: { type: Date, default: Date.now }
 }, {
     collection: "Product"
 });

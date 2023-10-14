@@ -1,0 +1,114 @@
+<form action="/home/product/update/<%= product._id %>" method="post">
+    <label for="product_name">product_name:</label>
+    <input type="text" id="product_name" name="product_name" value="<%= product.product_name %>" required>
+
+
+    <br>
+
+    <label for="brand_name">brand_name:</label>
+    <input type="text" id="brand_name" name="brand_name" value="<%=product.brand_name%>" required>
+
+    <br>
+
+    <label for="description">description:</label>
+    <input type="text" id="description" name="description" value="<%= product.description%>" required>
+
+    <br>
+
+    <label for="default_price">default_price:</label>
+    <input type="number" step="1000" id="default_price" name="default_price" value="<%= product.default_price%>"
+        required>
+
+    <br>
+
+    <input class="btn btn-primary" type="submit" value="Update">
+</form>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    add option
+</button>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Choose option</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
+                        value="option1" checked>
+                    <label class="form-check-label" for="inlineRadio1">Color</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
+                        value="option2">
+                    <label class="form-check-label" for="inlineRadio2">Ram</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3"
+                        value="option3">
+                    <label class="form-check-label" for="inlineRadio3">Rom</label>
+                </div>
+            </div>
+
+            <form method="post">
+                <div id="colors" class="column option">
+                    <label for="image">image:</label>
+                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                    <label for="color">color:</label>
+                    <input type="text" id="color" name="color" class="input_option" required>
+                    <label for="increase_price">increase_price:</label>
+                    <input type="number" step="1000" id="increase_price" name="increase_price" class="input_option"
+                        required>
+                </div>
+                <div id="rams" class="column option">
+                    <label for="size">size:</label>
+                    <input type="text" id="size" name="size" class="input_option" required>
+                    <label for="increase_price">increase_price:</label>
+                    <input type="number" step="1000" id="increase_price" name="increase_price" class="input_option"
+                        required>
+                </div>
+                <div id="roms" class="column option">
+                    <label for="size">size:</label>
+                    <input type="text" id="size" name="size" class="input_option" required>
+                    <label for="increase_price">increase_price:</label>
+                    <input type="number" step="1000" id="increase_price" name="increase_price" class="input_option"
+                        required>
+                </div>
+            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Insert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    const color = document.getElementById('colors')
+    const ram = document.getElementById('rams')
+    const rom = document.getElementById('roms')
+    document.querySelectorAll('input[name="inlineRadioOptions"]').forEach(element => {
+        element.addEventListener('click', (e) => {
+            if (document.getElementById('option1').checked) {
+                color.style.display = "block"
+                ram.style.display = "none"
+                rom.style.display = "none"
+            } else if (document.getElementById('option2').checked) {
+                color.style.display = "none"
+                ram.style.display = "block"
+                rom.style.display = "none"
+            } else {
+                color.style.display = "none"
+                ram.style.display = "none"
+                rom.style.display = "block"
+            }
+        });
+    })
+</script>

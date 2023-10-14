@@ -2,8 +2,7 @@ const express = require('express')
 const db = require('./src/config/db')
 const router = require('./src/route')
 require('dotenv').config()
-var path = require('path');
-var userRoute = require('./src/route/web/user.web.route');
+const path = require('path');
 
 
 db.connect()
@@ -16,16 +15,6 @@ app.set('views', path.join(__dirname, 'src/views'));
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'src/public')));
 
-
-app.get('/login',(req,res)=>{
-    res.render('auth/login.ejs');
-})
-
-app.get('/register',(req,res)=>{
-    res.render('auth/register.ejs');
-})
-
-app.use('/user', userRoute);
 
 
 const PORT = process.env.PORT | 3000

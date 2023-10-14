@@ -1,11 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>Product</h1>
-</body>
-</html>
+<a href="/home/product/new">Add new product</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">name</th>
+            <th scope="col">brand</th>
+            <th scope="col">description</th>
+            <th scope="col">price</th>
+            <th scope="col">action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let sp of data) {%>
+            <tr>
+                <td>
+                    <%=sp.product_name%>
+                </td>
+                <td>
+                    <%=sp.brand_name%>
+                </td>
+                <td>
+                    <%=sp.description%>
+                </td>
+                <td>
+                    <%=sp.default_price%>
+                </td>
+                <td class="column">
+                    <a href="/home/product/<%=sp._id%>">Update</a>
+                    <a href="/home/product/delete/<%=sp._id%>">Delete</a>
+                </td>
+            </tr>
+            <% } %>
+    </tbody>
+</table>

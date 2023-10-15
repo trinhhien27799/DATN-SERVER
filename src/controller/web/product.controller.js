@@ -4,7 +4,7 @@ const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 class Controller {
   async pageHome(req, res) {
     try {
-      const array = await Product.find({})
+      const array = await Product.find({}).sort({ time: -1 })
       res.render('product/viewProduct.ejs', { layout: 'layouts/main', data: array })
     } catch (error) {
       res.json(error)
@@ -31,6 +31,7 @@ class Controller {
 
   newProduct(req, res) {
     const body = req.body
+    body.max_price = body.default_price
     Product.create(body)
       .then((rs) => {
         console.log(rs)
@@ -69,6 +70,31 @@ class Controller {
       } else {
         product.options.roms.push(body)
       }
+      let color_price = 0
+      let ram_price = 0
+      let rom_price = 0
+
+      for (let i = 0; i < product.options.colors.length; i++) {
+        if (color_price < product.options.colors[i].increase_price) {
+          color_price = product.options.colors[i].increase_price
+        }
+      }
+
+
+      for (let i = 0; i < product.options.rams.length; i++) {
+        if (ram_price < product.options.rams[i].increase_price) {
+          ram_price = product.options.rams[i].increase_price
+        }
+      }
+
+
+      for (let i = 0; i < product.options.roms.length; i++) {
+        if (rom_price < product.options.roms[i].increase_price) {
+          rom_price = product.options.roms[i].increase_price
+        }
+      }
+
+      product.max_price = product.default_price + color_price + ram_price + rom_price
       await product.save()
       res.redirect(`/home/product/${product._id}`)
     } catch (err) {

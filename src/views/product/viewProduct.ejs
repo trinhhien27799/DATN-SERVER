@@ -25,10 +25,56 @@
                     <%=sp.default_price%>
                 </td>
                 <td class="column">
-                    <a href="/home/product/<%=sp._id%>">Update</a>
-                    <a href="/home/product/delete/<%=sp._id%>">Delete</a>
+                    <a href="/home/product/<%=sp._id%>"><button type="button"
+                            class="btn btn-primary btn-sm ms-3">Update</button></a>
+
+                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="<%=sp._id%>">Delete</button>
+
                 </td>
             </tr>
             <% } %>
     </tbody>
 </table>
+
+
+<form method="post" name="delete-product-form"></form>
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalLabel">Delete Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Confirm product deletion?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-product">Contineu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var id_product
+        var deleteForm = document.forms['delete-product-form']
+
+        const deleteModal = document.getElementById('deleteModal')
+        deleteModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            id_product = button.getAttribute('data-bs-id')
+        })
+
+        var btn_del = document.getElementById('btn-delete-product')
+        btn_del.onclick = function () {
+            deleteForm.action = 'product/delete/' + id_product + "?_method=DELETE"
+            deleteForm.submit()
+        }
+    });
+</script>

@@ -1,6 +1,6 @@
 require('dotenv').config()
 const Product = require('../../model/product')
-const { uploadImage, deleteImage } = require('../../ultils/uploadImage')
+const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 const { json } = require('express')
 
 class ApiController {

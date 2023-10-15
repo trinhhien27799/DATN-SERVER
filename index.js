@@ -1,9 +1,16 @@
 const express = require('express')
+require('dotenv').config()
+
 const db = require('./src/config/db')
 const router = require('./src/route')
-require('dotenv').config()
+
+
+const PORT = process.env.PORT
 const path = require('path')
+
+
 const ejsLayout = require('express-ejs-layouts')
+const methodOverride = require('method-override')
 
 
 db.connect()
@@ -12,6 +19,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'src/public')));
 
+//method overide
+app.use(methodOverride('_method'))
 
 // view engine setup
 app.use(ejsLayout)
@@ -22,10 +31,6 @@ app.set('layout', path.join(__dirname, 'src/views/layouts'));
 
 
 
-
-
-
-const PORT = process.env.PORT | 3000
 
 router(app)
 

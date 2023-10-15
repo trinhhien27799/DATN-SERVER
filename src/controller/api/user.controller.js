@@ -5,8 +5,8 @@ const otpGenerator = require('otp-generator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const SECRECT = process.env.SECRECT
-const { sendEmail } = require('../../ultils/emailSender')
-const { uploadImage, deleteImage } = require('../../ultils/uploadImage')
+const { sendEmail } = require('../../utils/emailSender')
+const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 const { json } = require('express')
 
 class ApiController {
@@ -152,12 +152,7 @@ class ApiController {
 
 
 
-// if (req.file != null && req.file != undefined) {
-//     const filename = req.file.filename;
-//     const filepath = req.file.path;
-//     const url = await uploadImage(filepath, filename);
-//     account.image = url;
-// }
+
 
 
 

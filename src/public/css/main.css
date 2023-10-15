@@ -11,8 +11,12 @@ td {
     text-align: center;
 }
 
+
+th {
+    text-align: center;
+}
+
 .modal-body {
-    background-color: rgb(99, 217, 101);
     align-items: center;
 }
 
@@ -27,4 +31,18 @@ td {
     border-radius: 8px;
     border-width: 0.8px;
     background-color: #e9ecef;
+}
+
+#preview-image {
+    width: 100px;
+    height: 100px;
+    display: none;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.option_colors{
+    width: 80px;
+    height: 80px;
 }

@@ -11,56 +11,50 @@ const SECRECT = process.env.SECRECT
 
 class Controller {
   pageLogin(req, res) {
-    res.render('auth/login.ejs', { layout: 'layouts/auth' })
+    res.render('auth/login.ejs', { layout: 'layouts/auth', data: null })
   }
 
   pageRegister(req, res) {
     res.render('auth/register.ejs', {
       layout: 'layouts/auth',
       email: null,
-      error: null
+      error: null,
+      fullname: null,
+      password: null
     })
   }
 
 
   async login(req, res) {
-    const { username, password } = req.body
+    const data = req.body
 
     try {
-      const user = await User.findOne({ username: username, role: true })
+      const user = await User.findOne({ username: data.username, role: true })
       if (!user) {
-        return res.render('auth/login.ejs', {
-          layout: 'layouts/auth',
-          data: {
-            code: 404,
-            message: "Tài khoản Không tồn tại",
-          }
-        })
+        throw "Username not found"
       }
       const hashPassword = user.password
-      const matches = await bcrypt.compare(password, hashPassword)
+      const matches = await bcrypt.compare(data.password, hashPassword)
       if (!matches) {
-        return res.render('auth/login.ejs', {
-          layout: 'layouts/auth',
-          data: {
-            code: 404,
-            message: "Tài khoản hoặc mật khẩu không chính xác",
-          }
-        })
+        throw "Username or password invalid"
       }
 
       user.password = null
-      const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
+      const token = await jwt.sign({ username: user.username, password: user.password, role: user.role }, SECRECT)
       res.redirect('/home/product')
     } catch (error) {
-      console.log(error)
-      res.json(error)
+      data.error = error
+      console.log(data)
+      res.render('auth/login.ejs', {
+        layout: 'layouts/auth',
+        data: data
+      })
     }
   }
 
   async sendOtp(req, res) {
+    const email = req.params.email
     try {
-      const email = req.params.email
       const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
       const isEmail = emailPattern.test(email)
       if (!isEmail) {
@@ -76,18 +70,22 @@ class Controller {
       const text = `Mã xác nhận của bạn là ${num}`
       sendEmail(email, subject, text)
       const otp = await bcrypt.hash(num, salt)
-      const rs = await Otp.create({ username: email, otp: otp })
+      await Otp.create({ username: email, otp: otp })
       res.render('auth/register.ejs', {
         layout: 'layouts/auth',
         email: email,
-        error: null
+        error: null,
+        fullname: null,
+        password: null
       })
     } catch (error) {
       console.log(error)
       res.render('auth/register.ejs', {
         layout: 'layouts/auth',
-        email: null,
-        error: error
+        email: email,
+        error: error,
+        fullname: null,
+        password: null
       })
     }
 
@@ -95,6 +93,7 @@ class Controller {
 
   async register(req, res) {
     const body = req.body
+    console.log(body)
     const otp = body.code
     delete body.code
     try {
@@ -117,14 +116,18 @@ class Controller {
       res.render('auth/register.ejs', {
         layout: 'layouts/auth',
         email: null,
-        error: "Register successful"
+        error: "Register successful",
+        fullname: null,
+        password: null
       })
     } catch (error) {
       console.log(error)
       res.render('auth/register.ejs', {
         layout: 'layouts/auth',
-        email: body.email,
-        error: error
+        email: body.username,
+        error: error,
+        fullname: body.fullname,
+        password: body.password
       })
     }
   }

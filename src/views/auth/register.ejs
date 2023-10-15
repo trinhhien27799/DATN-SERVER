@@ -12,26 +12,88 @@
                 <div class="align-items-center header-text mb-4">
                     <h2>Sign Up</h2>
                 </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-lg bg-light fs-6" placeholder="Email address">
-                </div>
-                <div class="input-group mb-3">
-                    <input type="password" class="form-control form-control-lg bg-light fs-6" placeholder="Password">
-                </div>
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control form-control-lg bg-light fs-6" placeholder="Email address">
-                </div>
+                <form name="register-form" method="post" action="/user/register">
+                    <div class="input-group mb-3">
+                        <input id="email" name="username" type="email"
+                            class="form-control form-control-lg bg-light fs-6" placeholder="Email address" required>
+                    </div>
 
+                    <div class="input-group mb-3">
+                        <input id="code" name="code" type="number" class="form-control form-control-lg bg-light fs-6"
+                            placeholder="code" required>
+                        <button id="btn-send" type="button" class="btn btn-outline-primary">Send</button>
+                    </div>
 
-                <div class="input-group mb-3">
-                    <button class="btn btn-lg btn-primary w-100 fs-6">Register</button>
-                </div>
+                    <div class="input-group mb-3">
+                        <input name="fullname" type="text" class="form-control form-control-lg bg-light fs-6"
+                            placeholder="Fullname" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input id="pass1" name="password" type="password"
+                            class="form-control form-control-lg bg-light fs-6" placeholder="Password" required>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input id="pass2" type="password" class="form-control form-control-lg bg-light fs-6"
+                            placeholder="Repeat password" required>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <button id="btn-register" type="submit"
+                            class="btn btn-lg btn-primary w-100 fs-6">Register</button>
+                    </div>
+                </form>
 
                 <div class="row">
-                    <small>Go back to login <a href="#">Sign In</a></small>
+                    <small>Go back to login <a href="/user/login">Sign In</a></small>
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+
+<form method="post" name="otp-form"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const data = "<%=email%>"
+        const err = "<%=error%>"
+        if (data) {
+            document.getElementById('email').value = data
+            alert(`Sent otp to email ${data}`)
+        }
+
+        if (err) {
+            alert(`${err}`)
+        }
+
+        const btnSend = document.getElementById('btn-send')
+        const form = document.forms['otp-form']
+
+
+        btnSend.addEventListener('click', function (event) {
+            event.preventDefault()
+            const email = document.getElementById('email').value
+            const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+            const isEmail = emailPattern.test(email)
+            if (isEmail) {
+                form.action = `/user/register/send-code/${email}`
+                form.submit()
+            } else {
+                alert('Email invalid')
+            }
+        })
+
+        const btnRegister = document.getElementById('btn-register')
+        btnRegister.addEventListener('click', function (event) {
+            event.preventDefault()
+            const pass1 = document.getElementById('pass1').value
+            const pass2 = document.getElementById('pass2').value
+            if (pass1 == pass2) {
+                document.forms['register-form'].submit()
+            } else {
+                alert("Password not correct!")
+            }
+        })
+    })
+</script>

@@ -6,7 +6,7 @@ const { json } = require('express')
 class ApiController {
     async getAll(req, res) {
         try {
-            const products = await Product.find({}).exec()
+            const products = await Product.find({}).sort({ time: -1 })
             res.json(products)
         } catch (error) {
             res.json({ code: 500, message: "error" })

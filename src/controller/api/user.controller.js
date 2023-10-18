@@ -1,6 +1,7 @@
 require('dotenv').config()
 const User = require('../../model/user')
 const Otp = require('../../model/otp')
+const Address = require('../../model/address')
 const otpGenerator = require('otp-generator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -14,7 +15,7 @@ class ApiController {
         const username = req.body.username
         const forgotPassword = req.body.forgotPassword
         try {
-            if (forgotPassword == 'false' || forgotPassword==false) {
+            if (forgotPassword == 'false' || forgotPassword == false) {
                 const user = await User.findOne({ username: username })
 
                 if (user) {
@@ -110,7 +111,7 @@ class ApiController {
                 return res.json({ code: 404, message: "Tài khoản hoặc mật khẩu không chính xác" })
             }
             user.password = null
-            const token = await jwt.sign({ username: username, password: password,role:user.role }, SECRECT)
+            const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
@@ -145,6 +146,99 @@ class ApiController {
         } catch (error) {
             console.log(error)
             res.json({ code: 500, message: "Đã xảy ra lỗi" })
+        }
+    }
+
+    async addAddress(req, res) {
+        const data = req.body
+        const username = data.username
+        try {
+            const numberPhonePattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
+            const isNumberPhone = numberPhonePattern.test(data.numberphone)
+            if (!isNumberPhone) {
+                throw "Số điện thoại không hợp lệ!"
+            }
+            const user = await User.findOne({ username: username })
+            if (!user) {
+                throw "Không tìm thấy username!"
+            }
+            const address = await Address.create(data)
+            if (!user.default_address) {
+                user.default_address = address
+                await user.save()
+            }
+            res.json({ code: 200, message: "Thêm địa chỉ thành công", address: address })
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: error })
+        }
+
+    }
+
+
+    async getAddress(req, res) {
+        const username = req.body.username
+        try {
+            const address = await Address.find({ username: username })
+            console.log(address)
+            if (!address) {
+                throw "Đã xảy ra lỗi!"
+            }
+            res.json({ code: 200, data: address })
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: error })
+        }
+    }
+
+    async updateAddress(req, res) {
+        const data = req.body
+        try {
+            const address = await Address.findById(data._id)
+            if (!address) {
+                throw "Không tìm thấy địa chỉ!"
+            }
+            address = data
+            await address.save()
+            const user = await User.findOne({ username: data.username })
+            if (!user) {
+                throw "Không tìm thấy thông tin người dùng"
+            }
+
+            if (data._id == user.default_address._id) {
+                user.default_address = address
+            }
+            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data: { address } })
+
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 404, message: error })
+        }
+    }
+
+    async deleteAddress(req, res) {
+        const data = req.body
+        try {
+            const address = await Address.findById(data._id)
+            if (!address) {
+                throw "Không tìm thấy địa chỉ!"
+            }
+            await address.deleteOne()
+            const user = await User.findOne({ username: data.username })
+            if (!user) {
+                throw "Không tìm thấy thông tin người dùng"
+            }
+            if (user.default_address._id == data._id) {
+                const newAdress = await Address.findOne({ username: data.username })
+                if (newAdress) {
+                    user.default_address = newAdress
+                    await user.save()
+                }
+            }
+            res.json({ code: 200, message: "Xóa địa chỉ thành công" })
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: error })
         }
     }
 

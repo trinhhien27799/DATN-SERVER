@@ -210,7 +210,7 @@ class ApiController {
             if (data._id == user.default_address._id) {
                 user.default_address = data
             }
-            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data: { data } })
+            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data})
 
         } catch (error) {
             console.log(error)

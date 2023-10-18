@@ -103,12 +103,15 @@ class ApiController {
         try {
             const user = await User.findOne({ username: username })
             if (!user) {
-                return res.json({ code: 404, message: "Tài khoản hoặc mật khẩu không chính xác" })
+                throw "Tài khoản hoặc mật khẩu không chính xác"
+            }
+            if (user.role == true) {
+                throw "Tài khoản không có quyền truy cập"
             }
             const hashPassword = user.password
             const matches = await bcrypt.compare(password, hashPassword)
             if (!matches) {
-                return res.json({ code: 404, message: "Tài khoản hoặc mật khẩu không chính xác" })
+                throw "Tài khoản hoặc mật khẩu không chính xác"
             }
             user.password = null
             const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)

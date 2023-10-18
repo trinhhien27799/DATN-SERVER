@@ -101,6 +101,9 @@ class Controller {
       if (!otpHolder) {
         throw 'OTP authentication failed!'
       }
+      if(otpHolder.length==0){
+        throw "Please verify your email before registering"
+      }
       const hashOtp = otpHolder[otpHolder.length - 1].otp
       const matches = await bcrypt.compare(otp, hashOtp)
       if (!matches) {

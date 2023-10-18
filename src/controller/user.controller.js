@@ -14,7 +14,7 @@ class ApiController {
         const username = req.body.username
         const forgotPassword = req.body.forgotPassword
         try {
-            if (forgotPassword == 'false' || forgotPassword==false) {
+            if (forgotPassword == 'false' || forgotPassword == false) {
                 const user = await User.findOne({ username: username })
 
                 if (user) {
@@ -100,7 +100,7 @@ class ApiController {
         const password = req.body.password
         console.log(username, password)
         try {
-            const user = await User.findOne({ username: username })
+            const user = await User.findOne({ username: username, role: false })
             if (!user) {
                 return res.json({ code: 404, message: "Tài khoản hoặc mật khẩu không chính xác" })
             }
@@ -110,11 +110,11 @@ class ApiController {
                 return res.json({ code: 404, message: "Tài khoản hoặc mật khẩu không chính xác" })
             }
             user.password = null
-            const token = await jwt.sign({ username: username, password: password,role:user.role }, SECRECT)
+            const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
-            res.json(error)
+            res.json({ code: 400, message: error })
         }
     }
 

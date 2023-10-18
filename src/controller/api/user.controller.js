@@ -198,17 +198,16 @@ class ApiController {
             if (!address) {
                 throw "Không tìm thấy địa chỉ!"
             }
-            address = data
-            await address.save()
+            await address.updateOne({ $set: data })
             const user = await User.findOne({ username: data.username })
             if (!user) {
                 throw "Không tìm thấy thông tin người dùng"
             }
 
             if (data._id == user.default_address._id) {
-                user.default_address = address
+                user.default_address = data
             }
-            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data: { address } })
+            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data: { data } })
 
         } catch (error) {
             console.log(error)

@@ -8,12 +8,10 @@ const Bill = new Schema({
     address: { type: Object, require: true },
     products: [{
         id_product: { type: String, required: true },
-        name_product: { type: String, required: true },
-        brand_product: { type: String, required: true },
-        color_product: {
-            color: { type: String },
-            image: { type: String }
-        },
+        product_name: { type: String, required: true },
+        brand_name: { type: String, required: true },
+        color_product: { type: String },
+        image_product: { type: String, required: true },
         ram_product: { type: String },
         rom_product: { type: String },
         price_product: { type: Number, require: true }
@@ -21,7 +19,8 @@ const Bill = new Schema({
     total_price: { type: Number, require: true },
     status: { type: Number, default: 0 },
     note: { type: String },
-    time: { type: Date, default: Date.now }
+    time: { type: Date, default: Date.now },
+    cancel_order: { type: String }
 }, {
     collection: "Bill"
 })

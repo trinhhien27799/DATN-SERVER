@@ -2,6 +2,7 @@
 const router = require('express').Router()
 const controller = require('../../controller/api/user.controller')
 const upload = require('../../utils/handleFile')
+const {checkUser} = require('../../midleware/authentication')
 
 
 //xác thực email
@@ -15,10 +16,10 @@ router.post('/auto-login', controller.loginWithToken)
 router.post('/forgot-password', controller.forgotPassword)
 
 //địa chỉ
-router.post('/address/new', controller.addAddress)
-router.post('/address/get-all',controller.getAddress)
-router.post('/address/update',controller.updateAddress)
-router.post('/address/delete',controller.deleteAddress)
+router.post('/address/new', checkUser, controller.addAddress)
+router.post('/address/get-all', checkUser, controller.getAddress)
+router.post('/address/update', checkUser, controller.updateAddress)
+router.post('/address/delete', checkUser, controller.deleteAddress)
 
 
 

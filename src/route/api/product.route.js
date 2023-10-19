@@ -4,5 +4,5 @@ const controller = require('../../controller/api/product.controller')
 
 
 router.get('/get-all',controller.getAll)
-router.post('/insert-product',controller.insert)
+router.get('/:id',controller.getItem)
 module.exports = router

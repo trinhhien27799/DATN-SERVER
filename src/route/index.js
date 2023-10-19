@@ -5,7 +5,7 @@ const userApi = require('./api/user.route')
 const productApi = require('./api/product.route')
 const billApi = require('./api/bill.route')
 const cartApi = require('./api/cart.route')
-
+const favoriteApi = require('./api/favorite.route')
 
 //route web
 var userWeb = require('./web/user.route');
@@ -22,6 +22,10 @@ function route(app) {
     app.use('/api/product', productApi)
     app.use('/api/bill', billApi)
     app.use('/api/cart', cartApi)
+    app.use('/api/favorite', favoriteApi)
+
+
+
 
     //web
 

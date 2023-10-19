@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const mongoose = require('mongoose') 
+const Schema = mongoose.Schema 
 
 
 
@@ -9,8 +9,8 @@ const Otp = new Schema({
     time: { type: Date, default: Date.now, index: { expires: 120 } }
 }, {
     collection: "Otp"
-});
+}) 
 
 
 
-module.exports = mongoose.model('Otp', Otp);
+module.exports = mongoose.model('Otp', Otp) 

@@ -1,6 +1,7 @@
 
 const User = require('../../model/user')
 const Bill = require('../../model/bill')
+const Cart = require('../../model/cart')
 
 class ApiController {
     async createBill(req, res) {
@@ -12,8 +13,11 @@ class ApiController {
                 throw "Danh sách sản phẩm không được để trống"
             }
             let total_price = 0
+            let list_id_cart = []
             for (let i = 0; i < data.products.length; i++) {
                 let price_product = data.products[i].default_price
+                list_id_cart.push(data.products[i]._id)
+                delete data.products[i]._id
                 delete data.products[i].default_price
                 if (data.products[i].color_product) {
                     price_product += data.products[i].color_product.increase_price
@@ -28,14 +32,15 @@ class ApiController {
                     price_product += data.products[i].rom_product.increase_price
                     data.products[i].rom_product = data.products[i].rom_product.size
                 }
-                data.products[i].price_product = price_product
-                total_price += price_product
+                data.products[i].price_product = price_product * data.products[i].quantity
+                total_price += data.products[i].price_product
             }
             data.total_price = total_price
-            const bill = Bill.create(data)
+            const bill = await Bill.create(data)
             if (!bill) {
                 throw "Đã xảy ra lỗi"
             }
+            await Cart.deleteMany({ _id: list_id_cart })
             res.json({ code: 200, message: "Đơn hàng của bạn đã tồn tại trên hệ thống" })
         } catch (error) {
             console.log(error)

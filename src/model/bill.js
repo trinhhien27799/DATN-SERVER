@@ -14,7 +14,8 @@ const Bill = new Schema({
         image_product: { type: String, required: true },
         ram_product: { type: String },
         rom_product: { type: String },
-        price_product: { type: Number, require: true }
+        price_product: { type: Number, require: true },
+        quantity: { type: Number, default: 1, required: true }
     }],
     total_price: { type: Number, require: true },
     status: { type: Number, default: 0 },

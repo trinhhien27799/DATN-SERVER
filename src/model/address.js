@@ -8,7 +8,6 @@ const Address = new Schema({
     fullname: { type: String, require: true },
     numberphone: { type: String, require: true },
     address: { type: String, require: true },
-
 }, {
     collection: "Address"
 })

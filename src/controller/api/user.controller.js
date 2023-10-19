@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken')
 const SECRECT = process.env.SECRECT
 const { sendEmail } = require('../../utils/emailSender')
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
-const { json } = require('express')
 
 class ApiController {
     async insertOtp(req, res) {
@@ -113,7 +112,7 @@ class ApiController {
             if (!matches) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }
-            user.password = null
+            user.password = ''
             const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
@@ -154,17 +153,13 @@ class ApiController {
 
     async addAddress(req, res) {
         const data = req.body
-        const username = data.username
         try {
             const numberPhonePattern = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
             const isNumberPhone = numberPhonePattern.test(data.numberphone)
             if (!isNumberPhone) {
                 throw "Số điện thoại không hợp lệ!"
             }
-            const user = await User.findOne({ username: username })
-            if (!user) {
-                throw "Không tìm thấy username!"
-            }
+            const user = await User.findOne({ username: data.username })
             const address = await Address.create(data)
             if (!user.default_address) {
                 user.default_address = address
@@ -203,14 +198,12 @@ class ApiController {
             }
             await address.updateOne({ $set: data })
             const user = await User.findOne({ username: data.username })
-            if (!user) {
-                throw "Không tìm thấy thông tin người dùng"
-            }
 
             if (data._id == user.default_address._id) {
                 user.default_address = data
+                await user.save()
             }
-            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data})
+            res.json({ code: 200, message: "Cập nhật địa chỉ thành công", data })
 
         } catch (error) {
             console.log(error)
@@ -227,9 +220,6 @@ class ApiController {
             }
             await address.deleteOne()
             const user = await User.findOne({ username: data.username })
-            if (!user) {
-                throw "Không tìm thấy thông tin người dùng"
-            }
             if (user.default_address._id == data._id) {
                 const newAdress = await Address.findOne({ username: data.username })
                 if (newAdress) {

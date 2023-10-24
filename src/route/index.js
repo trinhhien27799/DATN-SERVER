@@ -9,7 +9,7 @@ const favoriteApi = require('./api/favorite.route')
 
 //route web
 var userWeb = require('./web/user.route');
-var homeWeb = require('./web/home.route');
+var productWeb = require('./web/product.route');
 
 
 
@@ -34,7 +34,7 @@ function route(app) {
     })
 
     app.use('/user', userWeb)
-    app.use('/home', homeWeb)
+    app.use('/home', productWeb)
 
 }
 

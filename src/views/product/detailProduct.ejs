@@ -53,7 +53,8 @@
                     <%= color.increase_price %>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-primary">Detail</button>
+                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="color/<%=color._id%>">Delete</button>
                 </td>
             </tr>
             <% } %>
@@ -82,7 +83,8 @@
                     <%= ram.increase_price %>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-primary">Detail</button>
+                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="ram/<%=ram._id%>">Delete</button>
                 </td>
             </tr>
             <% } %>
@@ -110,7 +112,8 @@
                     <%= rom.increase_price %>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-primary">Detail</button>
+                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="rom/<%=rom._id%>">Delete</button>
                 </td>
             </tr>
             <% } %>
@@ -150,6 +153,31 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button id="btnInsert" type="button" class="btn btn-primary">Insert</button>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+
+<form method="post" name="delete-form"></form>
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modalLabel">Delete</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Confirm deletion?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" id="btn-delete-modal">Continue</button>
             </div>
         </div>
     </div>
@@ -353,6 +381,22 @@
                 }
             }
             return true
+        }
+
+
+        var id_delete
+        var deleteForm = document.forms['delete-form']
+
+        const deleteModal = document.getElementById('deleteModal')
+        deleteModal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            id_delete = button.getAttribute('data-bs-id')
+        })
+
+        var btn_del = document.getElementById('btn-delete-modal')
+        btn_del.onclick = function () {
+            deleteForm.action = '<%= product._id %>/delete/' + id_delete + "?_method=DELETE"
+            deleteForm.submit()
         }
 
     })

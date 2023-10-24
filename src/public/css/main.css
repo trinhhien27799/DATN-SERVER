@@ -8,7 +8,11 @@ a:hover {
 }
 
 td {
+    max-width: 200px;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -42,7 +46,7 @@ th {
     margin-bottom: 10px;
 }
 
-.option_colors{
+.option_colors {
     width: 80px;
     height: 80px;
 }

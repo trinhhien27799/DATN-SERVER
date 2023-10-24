@@ -67,17 +67,36 @@ class ApiController {
         const username = req.body.username
         const id_product = req.body.id_product
         try {
-            const favorite = await Favorite.findOne({ username: username }).lean()
+            const favorite = await Favorite.findOne({ username: username })
             if (!favorite) {
                 throw "Không tìm thấy danh sách yêu thích"
             }
-            for (let i = 0; i < favorite.list_id_product.length; i++) {
-                if (favorite.list_id_product[i] === id_product) {
-                    delete favorite.list_id_product[i]
-                    break
+            favorite.list_id_product = favorite.list_id_product.filter((id) => id != id_product)
+            await favorite.save()
+            res.json({ code: 200, message: "Xóa dữ liệu thành công" })
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: "Đã xảy ra lỗi" })
+        }
+    }
+
+    async check(req, res) {
+        const username = req.body.username
+        const id_product = req.body.id_product
+        try {
+            const listFavorite = await Favorite.findOne({ username: username })
+            if (!listFavorite) {
+                res.json(false)
+            } else {
+                let boolean = false
+                for (let fav of listFavorite.list_id_product) {
+                    if (id_product == fav) {
+                        boolean = true
+                        break
+                    }
                 }
+                res.json(boolean)
             }
-            res.json({ code: 200, message: "Xóa dữ liệu thành công", id_delete: id_product })
         } catch (error) {
             console.log(error)
             res.json({ code: 500, message: "Đã xảy ra lỗi" })

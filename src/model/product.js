@@ -9,7 +9,9 @@ const Product = new Schema({
     description: { type: String },
     default_price: { type: Number, require: true },
     max_price: { type: Number },
+    sold: { type: Number, default: 0 },
     image_preview: { type: String, require: true },
+    vote: { type: Number, default: 0 },
     options: {
         colors: [{
             color: { type: String },

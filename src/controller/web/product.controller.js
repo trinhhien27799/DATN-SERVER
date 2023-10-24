@@ -15,7 +15,6 @@ class Controller {
     const id = req.params.id
     try {
       const product = await Product.findById(id)
-      console.log(product)
       if (!product) {
         throw 'Đã xảy ra lỗi'
       }
@@ -53,8 +52,6 @@ class Controller {
       const url = await uploadImage(filepath, filename);
       body.image = url;
     }
-
-    console.log(body)
     try {
       var product = await Product.findById(id)
       if (!product) {
@@ -125,7 +122,6 @@ class Controller {
   updateProduct(req, res) {
     const body = req.body
     body.default_price = +body.default_price
-    console.log(body)
     const id = req.params.id
     console.log(id)
     Product.findOneAndUpdate({ _id: id }, { $set: body })
@@ -136,6 +132,57 @@ class Controller {
         console.log(err)
         res.json(err)
       })
+  }
+
+  async deleteOption(req, res) {
+    const id_product = req.params.id_product
+    const id_option = req.params.id_option
+    const option = req.params.option
+    console.log(id_product, option, id_option)
+    try {
+      const product = await Product.findOne({ _id: id_product })
+      if (!product) {
+        throw "Không tìm thấy sản phẩm"
+      }
+      if (option == "color") {
+        for (let i = 0; i < product.options.colors.length; i++) {
+          if (product.options.colors[i]._id == id_option) {
+            console.log(product.options.colors[i])
+            if (i == 0) {
+              console.log("one")
+              product.image_preview = product.options.colors[1].image
+            }
+            deleteImage(product.options.colors[i].image)
+            product.options.colors = product.options.colors.filter(function (item) {
+              return item._id != id_option
+            })
+          }
+        }
+      } else if (option == "ram") {
+        for (let i = 0; i < product.options.rams.length; i++) {
+          if (product.options.rams[i]._id == id_option) {
+            console.log(product.options.rams[i])
+            product.options.rams = product.options.rams.filter(function (item) {
+              return item._id != id_option
+            })
+          }
+        }
+      } else {
+        for (let i = 0; i < product.options.roms.length; i++) {
+          if (product.options.roms[i]._id == id_option) {
+            console.log(product.options.roms[i])
+            product.options.roms = product.options.roms.filter(function (item) {
+              return item._id != id_option
+            })
+          }
+        }
+      }
+      await product.save()
+      res.redirect(`/home/product/${id_product}`)
+    } catch (error) {
+      console.log(error)
+      res.json({ code: 500, message: "Đã xảy ra lỗi" })
+    }
   }
 }
 

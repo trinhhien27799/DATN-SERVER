@@ -100,7 +100,7 @@ class ApiController {
         const password = req.body.password
         console.log(username, password)
         try {
-            const user = await User.findOne({ username: username })
+            const user = await User.findOne({ username: username }).lean()
             if (!user) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }
@@ -112,8 +112,12 @@ class ApiController {
             if (!matches) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }
-            user.password = ''
+            delete user.password
+            if (!user.avatar) {
+                user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
+            }
             const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
+            console.log(user)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
@@ -232,6 +236,39 @@ class ApiController {
             console.log(error)
             res.json({ code: 500, message: error })
         }
+    }
+
+    async updateAvatar(req, res) {
+        const username = req.body.username
+        if (req.file != null && req.file != undefined) {
+            const filename = req.file.filename
+            const filepath = req.file.path
+            try {
+                const url = await uploadImage(filepath, filename)
+                const rs = await User.findOneAndUpdate({ username: username }, { $set: { avatar: url } })
+                console.log(rs)
+                res.json({ code: 200, message: url })
+            } catch (error) {
+                console.log(error)
+                res.json({ code: 500, message: "Cập nhật thất bại" })
+            }
+        } else {
+            res.json({ code: 500, message: "Cập nhật thất bại" })
+        }
+    }
+
+    updateFullname(req, res) {
+        const username = req.body.username
+        const fullname = req.body.fullname
+        User.findByIdAndUpdate({ username: username }, { $set: { fullname: fullname } })
+            .then((rs) => {
+                console.log(rs)
+                res.json({ code: 200, message: fullname })
+            })
+            .catch((error) => {
+                console.log(error)
+                res.json({ code: 500, message: "Cập nhật thất bại" })
+            })
     }
 
 }

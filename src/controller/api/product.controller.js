@@ -25,13 +25,50 @@ class ApiController {
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
-            res.json({ code: 200, message: "Lấy dữ liệu thành công", product })
+            
+            res.json(product)
         } catch (error) {
             console.log(error)
-            res.json({code:500,message:"Lấy dữ liệu thất bại"})
+            res.json({ code: 500, message: "Lấy dữ liệu thất bại" })
         }
     }
 
+    async search(req, res) {
+        const query_text = req.query.query_text
+        const min_price = req.query.min_price
+        const max_price = req.query.max_price
+        console.log(query_text, min_price, max_price)
+        var array = []
+        try {
+            if (query_text) {
+                const products_text = await Product.find({
+                    $or: [
+                        { product_name: { '$regex': query_text, '$options': 'i' } },
+                        { brand_name: { '$regex': query_text, '$options': 'i' } },
+                        { description: { '$regex': query_text, '$options': 'i' } }]
+                })
+                if (!products_text) {
+                    throw "Lọc theo text thất bại"
+                }
+                array.concat(products_text)
+            }
+
+            if (!min_price && !max_price) {
+                const products_prict = await Product.find({
+                    default_price: { $gte: min_price },
+                    max_price: { $lte: max_price }
+                })
+                if (!products_prict) {
+                    throw "Lọc theo giá thất bại"
+                }
+                array.concat(products_prict)
+            }
+            res.json({ code: 200, message: "Lọc thành công", array })
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: "Đã xảy ra lỗi" })
+        }
+    }
 
 }
 

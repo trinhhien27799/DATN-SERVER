@@ -52,10 +52,7 @@ class ApiController {
                 delete item.description
                 delete item.options
             }
-
-
-            console.log(list_favorite)
-            res.json({ code: 200, message: "Lấy dữ liệu thành công", list_favorite })
+            res.json(list_favorite)
 
         } catch (error) {
             console.log(error)

@@ -121,7 +121,7 @@ class ApiController {
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
-            res.json(error)
+            res.json({ code: 404, message: error})
         }
     }
 

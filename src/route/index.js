@@ -6,6 +6,8 @@ const productApi = require('./api/product.route')
 const billApi = require('./api/bill.route')
 const cartApi = require('./api/cart.route')
 const favoriteApi = require('./api/favorite.route')
+const bannerApi = require('./api/banner.route')
+
 
 //route web
 var userWeb = require('./web/user.route');
@@ -19,12 +21,12 @@ function route(app) {
 
     //api
 
-    app.use('/api/user', userApi)
-    app.use('/api/product', productApi)
-    app.use('/api/bill', billApi)
-    app.use('/api/cart', cartApi)
-    app.use('/api/favorite', favoriteApi)
-
+    app.use('/api/user', userApi) // tài khoản
+    app.use('/api/product', productApi) //sản phẩm
+    app.use('/api/bill', billApi) //hóa đơn
+    app.use('/api/cart', cartApi)//giỏ hàng
+    app.use('/api/favorite', favoriteApi) //yêu thích
+    app.use('/api/banner', bannerApi) // banner
 
 
 

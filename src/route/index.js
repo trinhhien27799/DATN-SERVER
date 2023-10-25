@@ -10,6 +10,7 @@ const favoriteApi = require('./api/favorite.route')
 //route web
 var userWeb = require('./web/user.route');
 var productWeb = require('./web/product.route');
+var billWeb = require('./web/bill.route');
 
 
 
@@ -35,6 +36,7 @@ function route(app) {
 
     app.use('/user', userWeb)
     app.use('/home', productWeb)
+    app.use('/bill', billWeb)
 
 }
 

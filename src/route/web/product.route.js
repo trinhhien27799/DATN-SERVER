@@ -12,4 +12,6 @@ router.put('/product/update/:id', controller.updateProduct)
 router.put('/product/option/:id', upload.single('image'), controller.putOption)
 router.delete('/product/delete/:id', controller.deleteProduct)
 router.delete('/product/:id_product/delete/:option/:id_option', controller.deleteOption)
+
+
 module.exports = router

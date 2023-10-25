@@ -11,7 +11,8 @@ const User = new Schema({
     password: { type: String, require: true },
     enable: { type: Boolean, default: true },
     rewardPoints: { type: Number, default: 0 },
-    default_address: { type: Object }
+    default_address: { type: Object },
+    time: { type: Date, default: Date.now }
 }, {
     collection: "User"
 });

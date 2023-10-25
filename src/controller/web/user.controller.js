@@ -135,6 +135,24 @@ class Controller {
     }
   }
 
+  async list(req, res) {
+    try {
+      const array = await User.find();
+      res.render('user/viewUser', { layout: 'layouts/main', data: array })
+    } catch (error) {
+      res.json(error)
+    }
+  }
+
+  async detail(req, res) {
+    try {
+      const data = await User.findById({ _id: req.params.id });
+      res.render('user/detailUser', { layout: 'layouts/main', data: data })
+    } catch (error) {
+      res.json(error)
+    }
+  }
+
 }
 
 module.exports = new Controller    

@@ -1,10 +1,10 @@
 <div class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Product</h1>
+    <h1 class="h2">User</h1>
     <div class="col-md-3">  
     </div>
     <div class="btn-toolbar mb-2 mb-md 0">
       <div class="btn-group me-2">
-        <a href="/home/product/new" class="btn btn-sm btn-outline-secondary">+ New Product</a>
+        <a href="/product/insert" class="btn btn-sm btn-outline-secondary">+ New User</a>
       </div>
     </div>
   </div>
@@ -15,39 +15,35 @@
     <table class="table table-striped table-sm">
       <thead>
         <tr>
-          <th scope="col">Product's name</th>
-          <th scope="col">Brand</th>
-          <th scope="col">Rom</th>
-          <th scope="col">Price</th>
+          <th scope="col">Full name</th>
+          <th scope="col">Reward points</th>
           <th scope="col">Created at</th>
           <th scope="col" class="text-end">Action</th>
         </tr>
       </thead>
   
       <tbody>
-        <% for (let sp of data) {%>
+        <% for (let user of data) {%>
           <tr class="align-middle">
-            <td><%= sp.product_name %></td>
-            <td><%= sp.brand_name %></td>
-            <td>5 GB</td>
-            <td><%= sp.max_price.toLocaleString() %> VND</td>
-            <td><%= sp.time.toLocaleString('en') %></td>
+            <td><%= user.fullname %></td>
+            <td><%= user.rewardPoints %></td>
+            <td><%= user.time.toLocaleString('en') %></td>
             <td class="text-end">
   
               <div class="d-flex flex-row justify-content-end gap-2">
 
              
-                <a href="/product/view/<%= sp._id %>" type="button" class="btn btn-primary btn-small">
+                <a href="/user/detail/<%= user._id %>" type="button" class="btn btn-primary btn-small">
                   <i class="bi bi-eye"></i>
                 </a>
   
-                <a href="/home/product/<%=sp._id%>" type="button" class="btn btn-warning btn-small">
+                <a href="/product/edit/<%= user._id %>" type="button" class="btn btn-warning btn-small">
                   <i class="bi bi-pencil"></i>
                 </a>
                
                <div>
                     <button type="button" class="btn btn-danger btn-small" data-bs-toggle="modal"
-                    data-bs-target="#deleteModal" data-bs-id="<%=sp._id%>"> <i class="bi bi-trash"></i></button>
+                    data-bs-target="#deleteModal" data-bs-id="<%=user._id%>"> <i class="bi bi-trash"></i></button>
                 </div>
               </div>
             </td>

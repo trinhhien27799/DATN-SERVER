@@ -9,5 +9,10 @@ router.get('/register', controller.pageRegister)
 router.post('/register/send-code/:email', controller.sendOtp)
 router.post('/register', controller.register)
 
+router.get('/', controller.list)
+router.get('/detail/:id', controller.detail)
+
+
+
 
 module.exports = router

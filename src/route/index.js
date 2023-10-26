@@ -12,6 +12,7 @@ const newsApi = require('./api/news.route')
 //route web
 var userWeb = require('./web/user.route');
 var productWeb = require('./web/product.route');
+var billWeb = require('./web/bill.route');
 
 
 const Brand = require('../model/brand')
@@ -42,6 +43,7 @@ function route(app) {
 
     app.use('/user', userWeb)
     app.use('/home', productWeb)
+    app.use('/bill', billWeb)
 
 }
 

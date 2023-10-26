@@ -6,7 +6,12 @@ const Schema = mongoose.Schema;
 const Product = new Schema({
     product_name: { type: String, require: true },
     brand_name: { type: String, require: true },
-    description: { type: String },
+    description: [{
+        title: { type: String },
+        content: { type: String },
+        image: { type: String },
+        productId: { type: String },
+    }],
     default_price: { type: Number, require: true },
     max_price: { type: Number },
     sold: { type: Number, default: 0 },

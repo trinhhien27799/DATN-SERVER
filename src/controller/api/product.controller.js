@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Product = require('../../model/product')
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
-const { json } = require('express')
+const Brand = require('../../model/brand')
 
 class ApiController {
     async getAll(req, res) {
@@ -25,7 +25,7 @@ class ApiController {
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
-            
+
             res.json(product)
         } catch (error) {
             console.log(error)
@@ -67,6 +67,18 @@ class ApiController {
         } catch (error) {
             console.log(error)
             res.json({ code: 500, message: "Đã xảy ra lỗi" })
+        }
+    }
+
+    async brand(req, res) {
+        const brand = req.params.name
+        const regex = new RegExp("^" + brand + "$", "i")
+        try {
+            const brand = await Brand.findOne({ brand: { $regex: regex } })
+            res.json(brand)
+        } catch (error) {
+            console.log(error)
+            res.json(error)
         }
     }
 

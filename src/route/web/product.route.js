@@ -10,6 +10,7 @@ router.get('/product/new', controller.pageNewProduct)
 router.get('/product/:id', controller.detailProduct)
 router.put('/product/update/:id', controller.updateProduct)
 router.put('/product/option/:id', upload.single('image'), controller.putOption)
+router.put('/product/description/:id', upload.single('image'), controller.putDescription)
 router.delete('/product/delete/:id', controller.deleteProduct)
 router.delete('/product/:id_product/delete/:option/:id_option', controller.deleteOption)
 module.exports = router

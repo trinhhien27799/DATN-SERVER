@@ -10,10 +10,6 @@
 
     <br>
 
-    <label for="description">description:</label>
-    <input type="text" id="description" name="description" value="<%= product.description%>" required>
-
-    <br>
 
     <label for="default_price">default_price:</label>
     <input type="number" step="1000" id="default_price" name="default_price" value="<%= product.default_price%>"
@@ -26,6 +22,10 @@
 
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
     add option
+</button>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modelDescription">
+    add description
 </button>
 
 <br>
@@ -162,6 +162,42 @@
 
 
 
+<div class="modal fade" id="modelDescription" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="modelDescriptionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modelDescriptionLabel">Add description</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="option" action="/home/product/description/<%= product._id %>?_method=PUT" method="post"
+                name="insert-option-form" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="title" class="form-label">title</label>
+                    <input type="text" class="form-control" name="title" id="title">
+                  </div>
+                  <div class="mb-3">
+                    <label for="content" class="form-label">content</label>
+                    <input type="text" class="form-control" name="content" id="content">
+                  </div>
+                  <div class="mb-3">
+                    <label for="image" class="form-label">image</label>
+                    <input type="file" class="form-control" name="image" id="image">
+                  </div>
+                <div class="d-flex align-items-end justify-content-end">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="btnInsert" type="submit" class="btn btn-primary ms-4">Insert</button>
+                </div>
+            </form>
+
+
+
+        </div>
+    </div>
+</div>
+
+
+
 <form method="post" name="delete-form"></form>
 
 
@@ -182,6 +218,38 @@
         </div>
     </div>
 </div>
+
+
+<label>Des</label>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">title</th>
+            <th scope="col">image</th>
+            <th scope="col">content</th>
+            <th scope="col">action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% for (let item of product.description) {%>
+            <tr>
+                <td>
+                    <%= item.title %>
+                </td>
+                <td>
+                    <img class="option_colors" src=" <%= item.image%>" alt="Không có ảnh">
+                </td>
+                <td>
+                    <%= item.content %>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="description/<%=item._id%>">Delete</button>
+                </td>
+            </tr>
+            <% } %>
+    </tbody>
+</table>
 
 
 
@@ -234,6 +302,7 @@
         increasePriceInput.step = '1000'
         increasePriceInput.id = 'increase_price'
         increasePriceInput.name = 'increase_price'
+        increasePriceInput.defaultValue = '0'
         increasePriceInput.className = 'input_option'
         increasePriceInput.required = true
         form.appendChild(increasePriceInput)
@@ -284,6 +353,7 @@
                     increasePriceInput.type = 'number'
                     increasePriceInput.step = '1000'
                     increasePriceInput.id = 'increase_price'
+                    increasePriceInput.defaultValue = '0'
                     increasePriceInput.name = 'increase_price'
                     increasePriceInput.className = 'input_option'
                     form.appendChild(increasePriceInput)
@@ -309,6 +379,7 @@
                     var increasePriceInput = document.createElement('input')
                     increasePriceInput.type = 'number'
                     increasePriceInput.step = '1000'
+                    increasePriceInput.defaultValue = '0'
                     increasePriceInput.id = 'increase_price'
                     increasePriceInput.name = 'increase_price'
                     increasePriceInput.className = 'input_option'
@@ -334,6 +405,7 @@
                     var increasePriceInput = document.createElement('input')
                     increasePriceInput.type = 'number'
                     increasePriceInput.step = '1000'
+                    increasePriceInput.defaultValue = '0'
                     increasePriceInput.id = 'increase_price'
                     increasePriceInput.name = 'increase_price'
                     increasePriceInput.className = 'input_option'

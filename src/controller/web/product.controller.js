@@ -184,6 +184,31 @@ class Controller {
       res.json({ code: 500, message: "Đã xảy ra lỗi" })
     }
   }
+
+  async putDescription(req,res){
+    const data = req.body
+    const id_product = req.params.id
+    if (req.file != null && req.file != undefined) {
+      const filename = req.file.filename
+      const filepath = req.file.path
+      const url = await uploadImage(filepath, filename);
+      data.image = url
+    }
+    if(Object.keys(data).length > 0){
+      try {
+        const product = await Product.findById(id_product)
+        if(!product){
+          throw "product not found"
+        }
+        product.description.push(data)
+        await product.save()
+      } catch (error) {
+        console.log(error)
+        res.json(error)
+      }
+    }
+    res.redirect(`/home/product/${id_product}`)
+  }
 }
 
 module.exports = new Controller; 

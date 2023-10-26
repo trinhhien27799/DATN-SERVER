@@ -27,11 +27,13 @@ class ApiController {
 
     async getAll(req, res) {
         try {
-            const banners = await Banner.find({}).limit(5).lean()
+            const banners = await Banner.find({}).sort({ time: -1 }).lean()
             if (!banners) {
                 throw ''
             }
-            banners.map((item) => delete item.content)
+            banners.map((item) => {
+                item.content.splice(1)
+            })
             res.json(banners)
         } catch (error) {
             console.log(error)

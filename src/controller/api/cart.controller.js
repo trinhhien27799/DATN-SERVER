@@ -1,17 +1,50 @@
 
 const User = require('../../model/user')
-const Bill = require('../../model/bill')
+const Product = require('../../model/product')
 const Cart = require('../../model/cart')
 
 class ApiController {
     async getAll(req, res) {
         const username = req.body.username
         try {
-            const carts = await Cart.find({ username: username })
+            const carts = await Cart.find({ username: username }).lean()
             if (!carts) {
                 throw "Không lấy được danh sách giỏ hàng"
             }
-            res.json({ code: 500, message: "Lấy dữ liệu thành công", carts })
+            for (let i = 0; i < carts.length; i++) {
+                const product = await Product.findById(carts[i].product_id)
+                if (!product) {
+                    delete carts[i]
+                    break
+                }
+                carts[i].product_name = product.product_name
+                carts[i].brand_name = product.brand_name
+                let total = product.default_price
+                for (let item of product.options.colors) {
+                    if (item._id == carts[i].color_id) {
+                        total += item.increase_price
+                        carts[i].image = item.image
+                        carts[i].color = item.color
+                    }
+                }
+                for (let item of product.options.rams) {
+                    if (item._id == carts[i].ram_id) {
+                        total += item.increase_price
+                        carts[i].ram = item.size
+                    }
+                }
+                for (let item of product.options.roms) {
+                    if (item._id == carts[i].rom_id) {
+                        total += item.increase_price
+                        carts[i].rom = item.size
+                    }
+                }
+                carts[i].price = total
+                delete carts[i].color_id
+                delete carts[i].ram_id
+                delete carts[i].rom_id
+            }
+            res.json(carts)
         } catch (error) {
             console.log(error)
             res.json({ code: 500, message: "Đã xảy ra lỗi" })
@@ -25,10 +58,40 @@ class ApiController {
             if (!cart) {
                 throw "Thêm thất bại"
             }
-            res.json({ code: 200, message: "Thêm thành công", cart })
+            const product = await Product.findById(cart.product_id)
+            if (!product) {
+                throw ""
+            }
+            cart.product_name = product.product_name
+            cart.brand_name = product.brand_name
+            let total = product.default_price
+            for (let item of product.options.colors) {
+                if (item._id == cart.color_id) {
+                    total += item.increase_price
+                    cart.image = item.image
+                    cart.color = item.color
+                }
+            }
+            for (let item of product.options.rams) {
+                if (item._id == cart.ram_id) {
+                    total += item.increase_price
+                    cart.ram = item.size
+                }
+            }
+            for (let item of product.options.roms) {
+                if (item._id == cart.rom_id) {
+                    total += item.increase_price
+                    cart.rom = item.size
+                }
+            }
+            cart.price = total
+            delete cart.color_id
+            delete cart.ram_id
+            delete cart.rom_id
+            res.json(cart)
         } catch (error) {
             console.log(error)
-            res.json({ code: 500, message: "Đã xảy ra lỗi" })
+            res.json("Đã xảy ra lỗi")
         }
     }
 

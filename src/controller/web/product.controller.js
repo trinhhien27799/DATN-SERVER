@@ -119,19 +119,28 @@ class Controller {
       })
   }
 
-  updateProduct(req, res) {
+  async updateProduct(req, res) {
     const body = req.body
     body.default_price = +body.default_price
     const id = req.params.id
     console.log(id)
-    Product.findOneAndUpdate({ _id: id }, { $set: body })
-      .then((rs) => {
-        res.redirect(`/home/product/${id}`)
-      })
-      .catch((err) => {
-        console.log(err)
-        res.json(err)
-      })
+    try {
+
+
+      const product = await Product.findById(id)
+      if (!product) {
+        throw ""
+      }
+      body.max_price = body.default_price + product.max_price - product.default_price
+      const update = await Product.findOneAndUpdate({ _id: id }, { $set: body })
+      if (!update) {
+        throw ""
+      }
+      res.redirect(`/home/product/${id}`)
+    } catch (error) {
+      console.log(err)
+      res.json(err)
+    }
   }
 
   async deleteOption(req, res) {
@@ -222,7 +231,7 @@ class Controller {
 
       for (let i = 0; i < product.description.length; i++) {
         if (product.description[i]._id == id_description) {
-          product.description.slice(i,1)
+          product.description.slice(i, 1)
           break
         }
       }

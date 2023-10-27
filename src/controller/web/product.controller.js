@@ -185,7 +185,7 @@ class Controller {
     }
   }
 
-  async putDescription(req,res){
+  async putDescription(req, res) {
     const data = req.body
     const id_product = req.params.id
     if (req.file != null && req.file != undefined) {
@@ -194,10 +194,10 @@ class Controller {
       const url = await uploadImage(filepath, filename);
       data.image = url
     }
-    if(Object.keys(data).length > 0){
+    if (Object.keys(data).length > 0) {
       try {
         const product = await Product.findById(id_product)
-        if(!product){
+        if (!product) {
           throw "product not found"
         }
         product.description.push(data)
@@ -208,6 +208,31 @@ class Controller {
       }
     }
     res.redirect(`/home/product/${id_product}`)
+  }
+
+  async deleteDescription(req, res) {
+    const id_product = req.params.id_product
+    const id_description = req.params.id_description
+
+    try {
+      const product = await Product.findOne({ _id: id_product })
+      if (!product) {
+        throw "Không tìm thấy sản phẩm"
+      }
+
+      for (let i = 0; i < product.description.length; i++) {
+        if (product.description[i]._id == id_description) {
+          product.description.slice(i,1)
+          break
+        }
+      }
+      await product.save()
+      res.json(product.description)
+      // res.redirect(`/home/product/${id_product}`)
+    } catch (error) {
+      console.log(error)
+      res.json({ code: 500, message: "Đã xảy ra lỗi" })
+    }
   }
 }
 

@@ -101,7 +101,7 @@ class Controller {
       if (!otpHolder) {
         throw 'OTP authentication failed!'
       }
-      if(otpHolder.length==0){
+      if (otpHolder.length == 0) {
         throw "Please verify your email before registering"
       }
       const hashOtp = otpHolder[otpHolder.length - 1].otp
@@ -137,7 +137,7 @@ class Controller {
 
   async list(req, res) {
     try {
-      const array = await User.find();
+      const array = await User.find().sort({ time: -1 });
       res.render('user/viewUser', { layout: 'layouts/main', data: array })
     } catch (error) {
       res.json(error)

@@ -12,6 +12,7 @@ router.put('/product/update/:id', controller.updateProduct)
 router.put('/product/option/:id', upload.single('image'), controller.putOption)
 router.put('/product/description/:id', upload.single('image'), controller.putDescription)
 router.delete('/product/delete/:id', controller.deleteProduct)
+router.delete('/product/:id_product/delete/description/:id_description', controller.deleteDescription)
 router.delete('/product/:id_product/delete/:option/:id_option', controller.deleteOption)
 
 

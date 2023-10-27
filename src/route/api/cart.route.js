@@ -1,6 +1,6 @@
 const router = require('express').Router()
 const controller = require('../../controller/api/cart.controller')
-const {checkUser} = require('../../midleware/authentication')
+const { checkUser } = require('../../midleware/authentication')
 
 
 

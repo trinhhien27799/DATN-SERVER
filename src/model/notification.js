@@ -8,7 +8,7 @@ const Notification = new Schema({
     title: { type: String, require: true },
     descrition: { type: String, require: true },
     image: { type: String, require: true },
-    seen:{type:Boolean},
+    seen:{type:Boolean,default:false},
     time: { type: Date, default: Date.now, index: { expires: 2592000 } }
 }, {
     collection: "Notification"

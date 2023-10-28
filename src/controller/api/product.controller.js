@@ -21,11 +21,16 @@ class ApiController {
     async getItem(req, res) {
         const id_product = req.params.id
         try {
-            const product = await Product.findOne({ _id: id_product })
+            const product = await Product.findOne({ _id: id_product }).lean()
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
-
+            const regex = new RegExp("^" + product.brand_name + "$", "i")
+            const brand = await Brand.findOne({ brand: { $regex: regex } })
+            if(brand){
+                product.brand_logo = brand.image
+            }
+            console.log(product.brand_logo)
             res.json(product)
         } catch (error) {
             console.log(error)

@@ -13,10 +13,10 @@ class ApiController {
     async insertOtp(req, res) {
         const username = req.body.username
         const forgotPassword = req.body.forgotPassword
+        const type = (forgotPassword == false) ? 1 : 2
         try {
-            if (forgotPassword == 'false' || forgotPassword == false) {
+            if (type == 1) {
                 const user = await User.findOne({ username: username })
-
                 if (user) {
                     res.json({ code: 409, message: "Tài khoản này đã tồn tại" })
                     return
@@ -42,7 +42,8 @@ class ApiController {
                     throw "Tài khoản không hợp lệ"
                 }
             }
-            const rs = await Otp.create({ username: username, otp: otp })
+
+            const rs = await Otp.create({ username: username, otp: otp, type: type })
             res.json({ code: 200, message: "Tạo otp thành công" })
         } catch (error) {
             console.log(error)
@@ -54,14 +55,19 @@ class ApiController {
         const username = req.body.username
         const otp = req.body.otp
         try {
-            const otpHolder = await Otp.find({ username: username })
-            if (!otpHolder.length) {
+            const otpHolder = await Otp.find({ username: username }).sort({_id:-1})
+            if (!otpHolder) {
                 return res.json({ code: 400, message: "Mã xác minh hết hạn" })
             }
-            const hashOtp = otpHolder[otpHolder.length - 1].otp
+        
+            const hashOtp = otpHolder.otp
             const matches = await bcrypt.compare(otp, hashOtp)
             if (matches) {
-                await Otp.deleteMany({ username: username })
+                const lastOtpId = otpHolder._id
+                const rs = await Otp.findByIdAndUpdate(lastOtpId, { $set: { confirm: true } })
+                if(!rs){
+                    return res.json({ code: 400, message: "Mã xác minh hết hạn" })
+                }
                 return res.json({ code: 200, message: "Xác nhận mã thành công" })
             }
             res.json({ code: 404, message: "Mã xác minh không chính xác" })
@@ -75,9 +81,13 @@ class ApiController {
 
     async createAccount(req, res) {
         const account = req.body
-        console.log(account)
         try {
             const username = account.username
+            const otp = await Otp.findOne({ username: username }).sort({_id:-1})
+            if(!otp  || otp.type != 1 || otp.confirm == false){
+                throw "Yêu cầu xác nhận email"
+            }
+           
             const userFind = await User.findOne({ username: username })
             if (userFind) {
                 throw "Tài khoản đã tồn tại"
@@ -121,7 +131,7 @@ class ApiController {
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
-            res.json({ code: 404, message: error})
+            res.json({ code: 404, message: error })
         }
     }
 
@@ -145,6 +155,10 @@ class ApiController {
         const username = req.body.username
         const password = req.body.password
         try {
+            const otp = await Otp.findOne({ username: username }).sort({_id:-1})
+            if(!otp  || otp.type != 2 || otp.confirm == false){
+                throw "Yêu cầu xác nhận email"
+            }
             const salt = await bcrypt.genSalt(10)
             const hashPass = await bcrypt.hash(password, salt)
             const update = await User.updateOne({ username: username }, { $set: { password: password } })

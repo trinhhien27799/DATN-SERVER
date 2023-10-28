@@ -37,8 +37,9 @@ function route(app) {
     })
 
     app.post('/brand', (req, res) => {
-       const data = req.body
-       Brand.create(data).then(rs=>res.json(rs)).catch(er=>res.json(er))
+       const id = req.body.id
+       const image = req.body.image
+       Brand.findByIdAndUpdate(id,{$set:{image:image}}).then(rs=>res.json(rs)).catch(er=>res.json(er))
     })
 
     app.use('/user', userWeb)

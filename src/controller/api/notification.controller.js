@@ -1,5 +1,6 @@
 
 const Notification = require('../../model/notification')
+ const { getIo } = require('../../config/socketManager')
 
 class ApiController {
     async getAll(req, res) {
@@ -59,9 +60,4 @@ class ApiController {
 module.exports = new ApiController;
 
 
-// otherFile.js
-// const { getIo } = require('./socketManager');
-
-// Sử dụng đối tượng io từ module
 // const io = getIo();
-// io.emit('someEvent', 'Some data from other file');

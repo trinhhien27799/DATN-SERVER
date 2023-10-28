@@ -9,7 +9,7 @@ const PORT = process.env.PORT
 const path = require('path')
 
 const app = express()
-// const server = http.createServer(app)
+const server = require('http').createServer(app)
 
 const { initializeSocket } = require('./src/config/socketManager')
 
@@ -35,7 +35,7 @@ app.set('layout', path.join(__dirname, 'src/views/layouts'));
 
 
 //socket io
-// initializeSocket(server)
+initializeSocket(server)
 
 
 router(app)

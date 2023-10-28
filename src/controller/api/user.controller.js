@@ -2,6 +2,7 @@ require('dotenv').config()
 const User = require('../../model/user')
 const Otp = require('../../model/otp')
 const Address = require('../../model/address')
+const Notification = require('../../model/notification')
 const otpGenerator = require('otp-generator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -55,18 +56,18 @@ class ApiController {
         const username = req.body.username
         const otp = req.body.otp
         try {
-            const otpHolder = await Otp.findOne({ username: username }).sort({_id:-1})
+            const otpHolder = await Otp.findOne({ username: username }).sort({ _id: -1 })
             if (!otpHolder) {
                 return res.json({ code: 400, message: "Mã xác minh hết hạn" })
             }
-        
+
             console.log(otpHolder)
             const hashOtp = otpHolder.otp
             const matches = await bcrypt.compare(otp, hashOtp)
             if (matches) {
                 const lastOtpId = otpHolder._id
                 const rs = await Otp.findByIdAndUpdate(lastOtpId, { $set: { confirm: true } })
-                if(!rs){
+                if (!rs) {
                     return res.json({ code: 400, message: "Mã xác minh hết hạn" })
                 }
                 return res.json({ code: 200, message: "Xác nhận mã thành công" })
@@ -84,11 +85,11 @@ class ApiController {
         const account = req.body
         try {
             const username = account.username
-            const otp = await Otp.findOne({ username: username }).sort({_id:-1})
-            if(!otp  || otp.type != 1 || otp.confirm == false){
+            const otp = await Otp.findOne({ username: username }).sort({ _id: -1 })
+            if (!otp || otp.type != 1 || otp.confirm == false) {
                 throw "Yêu cầu xác nhận email"
             }
-           
+
             const userFind = await User.findOne({ username: username })
             if (userFind) {
                 throw "Tài khoản đã tồn tại"
@@ -98,6 +99,13 @@ class ApiController {
             const hashPass = await bcrypt.hash(password, salt)
             account.password = hashPass
             const user = await User.create(account)
+            let noti = {
+                username: user.username,
+                title: "Chào mừng bạn đến với ứng dụng mua sắm điện thoại E-tech",
+                descrition: "",
+                image: "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/mnb.png?alt=media&token=8c4b965a-b06d-489e-97f8-fd60a2093da8"
+            }
+          await Notification.create(noti)
             res.json({ code: 200, message: "Tạo tài khoản thành công" })
         } catch (error) {
             console.log(error)
@@ -156,8 +164,8 @@ class ApiController {
         const username = req.body.username
         const password = req.body.password
         try {
-            const otp = await Otp.findOne({ username: username }).sort({_id:-1})
-            if(!otp  || otp.type != 2 || otp.confirm == false){
+            const otp = await Otp.findOne({ username: username }).sort({ _id: -1 })
+            if (!otp || otp.type != 2 || otp.confirm == false) {
                 throw "Yêu cầu xác nhận email"
             }
             const salt = await bcrypt.genSalt(10)

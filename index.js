@@ -8,13 +8,17 @@ const router = require('./src/route')
 const PORT = process.env.PORT
 const path = require('path')
 
+const app = express()
+// const server = http.createServer(app)
+
+const { initializeSocket } = require('./src/config/socketManager')
+
 
 const ejsLayout = require('express-ejs-layouts')
 const methodOverride = require('method-override')
 
 
 db.connect()
-const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'src/public')));
@@ -30,6 +34,8 @@ app.set('layout', path.join(__dirname, 'src/views/layouts'));
 
 
 
+//socket io
+// initializeSocket(server)
 
 
 router(app)

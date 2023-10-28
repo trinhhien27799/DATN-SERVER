@@ -8,7 +8,7 @@ const Otp = new Schema({
     otp: { type: String, require: true },
     type: { type: Number, require: true },
     confirm: { type: Boolean, default: false },
-    time: { type: Date, default: Date.now, index: { expires: 120 } }
+    time: { type: Date, default: Date.now, index: { expires: 240 } }
 }, {
     collection: "Otp"
 })

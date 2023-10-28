@@ -55,11 +55,12 @@ class ApiController {
         const username = req.body.username
         const otp = req.body.otp
         try {
-            const otpHolder = await Otp.find({ username: username }).sort({_id:-1})
+            const otpHolder = await Otp.findOne({ username: username }).sort({_id:-1})
             if (!otpHolder) {
                 return res.json({ code: 400, message: "Mã xác minh hết hạn" })
             }
         
+            console.log(otpHolder)
             const hashOtp = otpHolder.otp
             const matches = await bcrypt.compare(otp, hashOtp)
             if (matches) {

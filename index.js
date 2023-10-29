@@ -6,7 +6,7 @@ const router = require('./src/route')
 
 
 const PORT = process.env.PORT
-const path = require('path')
+
 
 const app = express()
 const server = require('http').createServer(app)
@@ -21,16 +21,16 @@ const methodOverride = require('method-override')
 db.connect()
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(express.static(path.join(__dirname, 'src/public')));
+app.use(express.static('./src/public'))
 
 //method overide
 app.use(methodOverride('_method'))
 
 // view engine setup
 app.use(ejsLayout)
-app.set('views', path.join(__dirname, 'src/views'));
+app.set('views', './src/views');
 app.set('view engine', 'ejs');
-app.set('layout', path.join(__dirname, 'src/views/layouts'));
+app.set('layout', './src/views/layouts');
 
 
 

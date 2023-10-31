@@ -11,6 +11,10 @@ router.post('/register', controller.register)
 
 router.get('/', controller.list)
 router.get('/detail/:id', controller.detail)
+router.get('/insert', controller.insert);
+router.post('/insert', controller.insert);
+router.delete('/delete/:id', controller.delete)
+
 
 
 

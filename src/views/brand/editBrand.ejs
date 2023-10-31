@@ -1,0 +1,87 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">Brand</h1>
+  <div class="btn-toolbar mb-2 mb-md 0">
+    <div class="btn-group me-2">
+      <button class="btn btn-sm btn-outline-secondary">?</button>
+    </div>
+  </div>
+</div>
+
+<div class="col py-3">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/brand">Brand</a></li>
+          <li class="breadcrumb-item active">Edit brand</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col text-end fw-lighter">
+      <b>Brand</b>
+    </div>
+  </div>
+</div>
+
+<form action="/brand/edit" method="POST"  enctype="multipart/form-data">
+  
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label style="margin: 5px;" for="email">Brand name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="brand"
+        name="brand"
+        value="<%= data.brand %>"
+        placeholder="Brand"
+        required
+      />
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+
+    <div class="row">
+        <label style="margin: 5px;" for="lastName">Image</label>
+        <tr>
+          <td>
+            <img
+              class="col"
+              style="max-width: 150px"
+              src="<%= data.image %>"
+              alt=""
+            />
+          </td>
+        </tr>
+      </div>
+    <div class="col">
+        <input
+          type="file"
+          class="form-control"
+          id="image"
+          name="image"
+          placeholder="Image"
+        />
+      </div>
+  </div>
+ 
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="lastName">Description</label>
+      <textarea class="form-control" name="description" id="description" cols="30" rows="10" placeholder="Description"
+      required><%= data.description %></textarea>
+  </div>
+  </div>
+
+  <input type="text" id="_id" name="_id" value="<%= data._id %>" hidden>
+  <input type="text" id="img" name="img" value="<%= data.image %>" hidden>
+
+
+  <div class="form-group mb-4">
+    <button type="submit" class="btn btn-primary">Edit brand</button>
+  </div>
+</form>

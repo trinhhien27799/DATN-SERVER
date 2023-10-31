@@ -15,6 +15,7 @@ const notiApi = require('./api/notification.route')
 var userWeb = require('./web/user.route');
 var productWeb = require('./web/product.route');
 var billWeb = require('./web/bill.route');
+var brandWeb = require('./web/brand.route');
 
 
 function route(app) {
@@ -45,6 +46,7 @@ function route(app) {
     app.use('/user', userWeb)
     app.use('/home', productWeb)
     app.use('/bill', billWeb)
+    app.use('/brand', brandWeb)
 
 }
 

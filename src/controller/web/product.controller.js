@@ -236,8 +236,8 @@ class Controller {
         }
       }
       await product.save()
-      res.json(product.description)
-      // res.redirect(`/home/product/${id_product}`)
+      // res.json(product.description)
+      res.redirect(`/home/product/${id_product}`)
     } catch (error) {
       console.log(error)
       res.json({ code: 500, message: "Đã xảy ra lỗi" })

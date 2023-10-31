@@ -1,23 +1,58 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">Product</h1>
+  <div class="btn-toolbar mb-2 mb-md 0">
+    <div class="btn-group me-2">
+      <button class="btn btn-sm btn-outline-secondary">?</button>
+    </div>
+  </div>
+</div>
 
-<form action="/home/product/add" method="post">
-    <label for="product_name">product_name:</label>
-    <input type="text" id="product_name" name="product_name" required>
+<div class="col py-3">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/home/product">Product</a></li>
+          <li class="breadcrumb-item active">New product</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col text-end fw-lighter">
+      <b>Product</b>
+    </div>
+  </div>
+</div>
 
-    <br>
+<form action="/home/product/add" method="POST">
+  <div class="row form-group mb-4">
+    <div class="col">
+        <label for="product_name">Product name:</label>
+        <input class="form-control" type="text" id="product_name" name="product_name" required>
+    </div>
+  </div>
 
-    <label for="brand_name">brand_name:</label>
-    <input type="text" id="brand_name" name="brand_name" required>
+  <div class="row form-group mb-4">
 
-    <br>
+    <div class="col">
+        <label for="brand_name">Brand name:</label>
+        <input class="form-control" type="text" id="brand_name" name="brand_name" required>
+    
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+    <div class="col">
+        <label for="default_price">Default price:</label>
+        <input class="form-control" type="number" step="1000" id="default_price" name="default_price" required>
+    </div>
+
+  </div>
 
 
-    <label for="default_price">default_price:</label>
-    <input type="number" step="1000" id="default_price" name="default_price" required>
-
-
-    <br>
-
-
-    <!-- Nút đăng nhập -->
-    <button type="submit">add</button>
+  <div class="form-group mb-4">
+    <button type="submit" class="btn btn-primary">Add Product</button>
+  </div>
 </form>
+

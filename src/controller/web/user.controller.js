@@ -1,158 +1,207 @@
-const User = require("../../model/user")
-const Otp = require("../../model/otp")
-const bcrypt = require("bcrypt")
-const jwt = require('jsonwebtoken')
-const otpGenerator = require('otp-generator')
-const { sendEmail } = require('../../utils/emailSender')
+const User = require("../../model/user");
+const Otp = require("../../model/otp");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const { sendEmail } = require("../../utils/emailSender");
+const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 
-require('dotenv').config
 
-const SECRECT = process.env.SECRECT
+require("dotenv").config;
+
+const SECRECT = process.env.SECRECT;
 
 class Controller {
   pageLogin(req, res) {
-    res.render('auth/login.ejs', { layout: 'layouts/auth', data: null })
+    res.render("auth/login.ejs", { layout: "layouts/auth", data: null });
   }
 
   pageRegister(req, res) {
-    res.render('auth/register.ejs', {
-      layout: 'layouts/auth',
+    res.render("auth/register.ejs", {
+      layout: "layouts/auth",
       email: null,
       error: null,
       fullname: null,
-      password: null
-    })
+      password: null,
+    });
   }
 
-
   async login(req, res) {
-    const data = req.body
+    const data = req.body;
 
     try {
-      const user = await User.findOne({ username: data.username, role: true })
+      const user = await User.findOne({ username: data.username, role: true });
       if (!user) {
-        throw "Username not found"
+        throw "Username not found";
       }
-      const hashPassword = user.password
-      const matches = await bcrypt.compare(data.password, hashPassword)
+      const hashPassword = user.password;
+      const matches = await bcrypt.compare(data.password, hashPassword);
       if (!matches) {
-        throw "Username or password invalid"
+        throw "Username or password invalid";
       }
 
-      user.password = null
-      const token = await jwt.sign({ username: user.username, password: user.password, role: user.role }, SECRECT)
-      res.redirect('/home/product')
+      user.password = null;
+      const token = await jwt.sign(
+        { username: user.username, password: user.password, role: user.role },
+        SECRECT
+      );
+      res.redirect("/home/product");
     } catch (error) {
-      data.error = error
-      console.log(data)
-      res.render('auth/login.ejs', {
-        layout: 'layouts/auth',
-        data: data
-      })
+      data.error = error;
+      console.log(data);
+      res.render("auth/login.ejs", {
+        layout: "layouts/auth",
+        data: data,
+      });
     }
   }
 
   async sendOtp(req, res) {
-    const email = req.params.email
+    const email = req.params.email;
     try {
-      const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
-      const isEmail = emailPattern.test(email)
+      const emailPattern = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+      const isEmail = emailPattern.test(email);
       if (!isEmail) {
-        throw 'Email invalid!'
+        throw "Email invalid!";
       }
-      const check = await User.findOne({ username: email })
+      const check = await User.findOne({ username: email });
       if (check) {
-        throw 'Email already exists!'
+        throw "Email already exists!";
       }
-      const num = await otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
-      const salt = await bcrypt.genSalt(10)
-      const subject = "Xác nhận email"
-      const text = `Mã xác nhận của bạn là ${num}`
-      sendEmail(email, subject, text)
-      const otp = await bcrypt.hash(num, salt)
-      await Otp.create({ username: email, otp: otp })
-      res.render('auth/register.ejs', {
-        layout: 'layouts/auth',
+      const num = await otpGenerator.generate(6, {
+        upperCaseAlphabets: false,
+        specialChars: false,
+        lowerCaseAlphabets: false,
+      });
+      const salt = await bcrypt.genSalt(10);
+      const subject = "Xác nhận email";
+      const text = `Mã xác nhận của bạn là ${num}`;
+      sendEmail(email, subject, text);
+      const otp = await bcrypt.hash(num, salt);
+      await Otp.create({ username: email, otp: otp });
+      res.render("auth/register.ejs", {
+        layout: "layouts/auth",
         email: email,
         error: null,
         fullname: null,
-        password: null
-      })
+        password: null,
+      });
     } catch (error) {
-      console.log(error)
-      res.render('auth/register.ejs', {
-        layout: 'layouts/auth',
+      console.log(error);
+      res.render("auth/register.ejs", {
+        layout: "layouts/auth",
         email: email,
         error: error,
         fullname: null,
-        password: null
-      })
+        password: null,
+      });
     }
-
   }
 
   async register(req, res) {
-    const body = req.body
-    console.log(body)
-    const otp = body.code
-    delete body.code
+    const body = req.body;
+    console.log(body);
+    const otp = body.code;
+    delete body.code;
     try {
-      const otpHolder = await Otp.find({ username: body.username })
+      const otpHolder = await Otp.find({ username: body.username });
       if (!otpHolder) {
-        throw 'OTP authentication failed!'
+        throw "OTP authentication failed!";
       }
       if (otpHolder.length == 0) {
-        throw "Please verify your email before registering"
+        throw "Please verify your email before registering";
       }
-      const hashOtp = otpHolder[otpHolder.length - 1].otp
-      const matches = await bcrypt.compare(otp, hashOtp)
+      const hashOtp = otpHolder[otpHolder.length - 1].otp;
+      const matches = await bcrypt.compare(otp, hashOtp);
       if (!matches) {
-        throw 'OTP not correct!'
+        throw "OTP not correct!";
       }
-      await Otp.deleteMany({ username: body.username })
-      body.role = true
-      const salt = await bcrypt.genSalt(10)
-      const password = body.password
-      const hashPass = await bcrypt.hash(password, salt)
-      body.password = hashPass
-      await User.create(body)
-      res.render('auth/register.ejs', {
-        layout: 'layouts/auth',
+      await Otp.deleteMany({ username: body.username });
+      body.role = true;
+      const salt = await bcrypt.genSalt(10);
+      const password = body.password;
+      const hashPass = await bcrypt.hash(password, salt);
+      body.password = hashPass;
+      await User.create(body);
+      res.render("auth/register.ejs", {
+        layout: "layouts/auth",
         email: null,
         error: "Register successful",
         fullname: null,
-        password: null
-      })
+        password: null,
+      });
     } catch (error) {
-      console.log(error)
-      res.render('auth/register.ejs', {
-        layout: 'layouts/auth',
+      console.log(error);
+      res.render("auth/register.ejs", {
+        layout: "layouts/auth",
         email: body.username,
         error: error,
         fullname: body.fullname,
-        password: body.password
-      })
+        password: body.password,
+      });
     }
   }
 
   async list(req, res) {
     try {
       const array = await User.find().sort({ time: -1 });
-      res.render('user/viewUser', { layout: 'layouts/main', data: array })
+      res.render("user/viewUser", { layout: "layouts/main", data: array });
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 
   async detail(req, res) {
     try {
       const data = await User.findById({ _id: req.params.id });
-      res.render('user/detailUser', { layout: 'layouts/main', data: data })
+      res.render("user/detailUser", { layout: "layouts/main", data: data });
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 
+  async insert(req, res) {
+    if (req.method == "POST") {
+      const body = req.body;
+      const salt = await bcrypt.genSalt(10);
+      const password = body.password;
+      const hashPass = await bcrypt.hash(password, salt);
+      body.password = hashPass;
+      body.avatar = "https://s.net.vn/za1l";
+      await User.create(body);
+      return res.redirect("/user");
+    }
+    res.render("user/addUser", { layout: "layouts/main" });
+  }
+
+  async edit(req, res) {
+    const id = req.params.id;
+    const data = await User.findById({ _id: req.params.id });
+
+    res.render("user/editUser", {
+      layout: "layouts/main",
+      data,
+    });
+  }
+
+  async editPost(req, res) {}
+
+  async delete(req, res) {
+    const id = req.params.id;
+
+    await User.findByIdAndDelete(id)
+      .then((user) => {
+        if (!user) {
+          throw "User not found!";
+        }
+        // deleteImage(user.avatar);
+        res.redirect("/user");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json(err);
+      });
+  }
 }
 
-module.exports = new Controller    
+module.exports = new Controller();

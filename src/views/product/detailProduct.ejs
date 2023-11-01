@@ -1,75 +1,119 @@
-<form method="post" action="/home/product/update/<%= product._id %>?_method=PUT">
-    <label for="product_name">product_name:</label>
-    <input type="text" id="product_name" name="product_name" value="<%= product.product_name %>" required>
+
+<div
+  class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">Product</h1>
+  <div class="btn-toolbar mb-2 mb-md 0">
+    <div class="btn-group me-2">
+      <button class="btn btn-sm btn-outline-secondary">?</button>
+    </div>
+  </div>
+</div>
 
 
-    <br>
+<div class="col py-3">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/product">Product</a></li>
+          <li class="breadcrumb-item active">Edit product</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col text-end fw-lighter">
+        <b>Product</b>
+    </div>
+  </div>
+</div>
 
-    <label for="brand_name">brand_name:</label>
-    <input type="text" id="brand_name" name="brand_name" value="<%=product.brand_name%>" required>
-
-    <br>
 
 
+<form action="/product/update/<%= product._id %>?_method=PUT" method="POST">
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="firstName">Product Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="product_name"
+        name="product_name"
+        value="<%= product.product_name %>"
+        placeholder="Product Name"
+        required
+      />
+    </div>
 
-    <label for="default_price">default_price:</label>
-    <input type="number" step="1000" id="default_price" name="default_price" value="<%= product.default_price%>"
-        required>
+    <div class="col">
+        <label for="tel">Brand name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="brand_name"
+          name="brand_name"
+          value="<%=product.brand_name%>"
+          placeholder="Brand name"
+          required
+        />
+      </div>
+   
+  </div>
 
-    <br>
-    <label for="percent_discount">percent_discount:</label>
+  <div class="row form-group mb-4" style="padding-bottom: 10px;">
+
+    <div class="col">
+        <label for="tel">Quantity</label>
+        <input
+          type="text"
+          class="form-control"
+          id="quantity"
+          name="quantity"
+          value="no data"
+          placeholder="Quantity"
+          required
+        />
+      </div>
+
+    <div class="col">
+        <label for="lastName">Default price</label>
+        <input
+          type="number"
+          class="form-control"
+          id="default_price"
+          name="default_price"
+          value="<%= product.default_price%>"
+          placeholder="Price"
+          required
+        />
+      </div>
+         <div class="col">
+        <label for="percent_discount">percent_discount:</label>
     <input type="number" step="1" id="percent_discount" name="percent_discount" required value=<%= product.percent_discount%>>
+    </div>
+  </div>
 
+  <li class="list-group-item"> 
+    <div class="row">
+        <label for="lastName">Colors: </label>
+      <% for (let color of product.options.colors) {%>
+        <div class="col">
+          <tr>
+            <td>
+                <img class="col" style="max-width: 150px" src="<%= color.image %>" alt="">
+            </td>
+            <td class="text-bottom">
+              <div>Color: <%= color.color %></div>
+              <div>Increase price: <%= color.increase_price %> VND</div>  
+              <a style="margin-left: 50px;" class="btn btn-danger btn-sm mr-2" href="" data-bs-id="color/<%=color._id%>"  data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-x-lg"></i></a>          
+            </td>   
+          </tr>   
+        </div>         
+      <% } %>
+    </div>
+  </li>
 
-    <br>
-
-    <input class="btn btn-primary" type="submit" value="Update">
-</form>
-
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-    add option
-</button>
-
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modelDescription">
-    add description
-</button>
-
-<br>
-
-<label>Color</label>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th scope="col">color</th>
-            <th scope="col">image</th>
-            <th scope="col">increase_price</th>
-            <th scope="col">action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for (let color of product.options.colors) {%>
-            <tr>
-                <td>
-                    <%= color.color %>
-                </td>
-                <td>
-                    <img class="option_colors" src=" <%= color.image %>" alt="Error">
-                </td>
-                <td>
-                    <%= color.increase_price %>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
-                        data-bs-target="#deleteModal" data-bs-id="color/<%=color._id%>">Delete</button>
-                </td>
-            </tr>
-            <% } %>
-    </tbody>
-</table>
-
-
-
-<label>Ram</label>
+  <div class="col" style="padding-top: 20px;">
+  <label>Ram</label>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -89,16 +133,19 @@
                     <%= ram.increase_price %>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
-                        data-bs-target="#deleteModal" data-bs-id="ram/<%=ram._id%>">Delete</button>
+                    <a class="btn btn-danger btn-sm mr-2" href="" data-bs-id="ram/<%=ram._id%>"  data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-x-lg"></i></a>
+
+                    <!-- <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
+                        data-bs-target="#deleteModal" data-bs-id="ram/<%=ram._id%>">Delete</button> -->
                 </td>
             </tr>
             <% } %>
     </tbody>
 </table>
+  </div>
 
-
-<label>Rom</label>
+  <div class="col" style="padding-top: 20px;">
+  <label for="lastName">Rom</label>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -118,13 +165,60 @@
                     <%= rom.increase_price %>
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
-                        data-bs-target="#deleteModal" data-bs-id="rom/<%=rom._id%>">Delete</button>
+                    <a class="btn btn-danger btn-sm mr-2" href="" data-bs-id="rom/<%=rom._id%>"  data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-x-lg"></i></a>           
                 </td>
             </tr>
             <% } %>
     </tbody>
 </table>
+  </div>
+
+  <label>Des</label>
+  <table class="table table-bordered">
+      <thead>
+          <tr>
+              <th scope="col">title</th>
+              <th scope="col">image</th>
+              <th scope="col">content</th>
+              <th scope="col">action</th>
+          </tr>
+      </thead>
+      <tbody>
+          <% for (let item of product.description) {%>
+              <tr>
+                  <td>
+                      <%= item.title %>
+                  </td>
+                  <td>
+                      <img style="width: 60px; height: 60px;" class="option_colors" src=" <%= item.image%>" alt="Không có ảnh">
+                  </td>
+                  <td>
+                      <%= item.content %>
+                  </td>
+                  <td>
+                    <a class="btn btn-danger btn-sm mr-2" href="" data-bs-id="description/<%=item._id%>"  data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="bi bi-x-lg"></i></a>           
+                </td>
+                 
+              </tr>
+              <% } %>
+      </tbody>
+  </table>
+
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    add option
+</button>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modelDescription">
+    add description
+</button>
+
+  <input class="btn btn-primary" type="submit" value="Update">
+  
+</form>
+<div style="margin-top: 50px;"></div>
+
+
+
 
 
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -153,7 +247,7 @@
                 </div>
             </div>
 
-            <form class="option" action="/home/product/option/<%= product._id %>?_method=PUT" method="post"
+            <form class="option" action="/product/option/<%= product._id %>?_method=PUT" method="post"
                 name="insert-option-form" enctype="multipart/form-data">
             </form>
             <div class="modal-footer">
@@ -165,8 +259,6 @@
         </div>
     </div>
 </div>
-
-
 
 <div class="modal fade" id="modelDescription" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="modelDescriptionLabel" aria-hidden="true">
@@ -224,38 +316,6 @@
         </div>
     </div>
 </div>
-
-
-<label>Des</label>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th scope="col">title</th>
-            <th scope="col">image</th>
-            <th scope="col">content</th>
-            <th scope="col">action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <% for (let item of product.description) {%>
-            <tr>
-                <td>
-                    <%= item.title %>
-                </td>
-                <td>
-                    <img class="option_colors" src=" <%= item.image%>" alt="Không có ảnh">
-                </td>
-                <td>
-                    <%= item.content %>
-                </td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm mr-2" data-bs-toggle="modal"
-                        data-bs-target="#deleteModal" data-bs-id="description/<%=item._id%>">Delete</button>
-                </td>
-            </tr>
-            <% } %>
-    </tbody>
-</table>
 
 
 

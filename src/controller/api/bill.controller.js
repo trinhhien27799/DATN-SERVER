@@ -2,11 +2,11 @@
 const User = require('../../model/user')
 const Bill = require('../../model/bill')
 const Cart = require('../../model/cart')
+const Voucher = require('../../model/voucher')
 
 class ApiController {
     async createBill(req, res) {
         const data = req.body
-        console.log("k", data)
         delete data.address._id
         try {
             if (data.products.length == 0) {
@@ -34,6 +34,26 @@ class ApiController {
                 }
                 data.products[i].price_product = price_product * data.products[i].quantity
                 total_price += data.products[i].price_product
+            }
+
+            if (data.voucherId) {
+                const currentDate = new Date()
+                const voucher = await Voucher.findOne({
+                    _id: data.voucherId, username: data.username, used: false, expiration_date: { $gt: currentDate }
+                })
+                if (voucher.type == 0) { // giảm tiền vận chuyển
+                    if (voucher.discount_type == 0) {
+                        const fee = data.transport_fee < voucher.discount_value ? 0 : data.transport_fee - voucher.discount_value
+                        total_price+= fee
+                    }else{
+                        const fee = data.transport_fee * (100-voucher.discount_value)
+                        total_price+= fee
+                    }
+                }else{// giam tien hang
+                    total_price-= voucher.discount_value
+                }
+                voucher.used = false
+                await voucher.save()
             }
             data.total_price = total_price
             const bill = await Bill.create(data)

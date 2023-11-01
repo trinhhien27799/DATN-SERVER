@@ -14,6 +14,7 @@ const Product = new Schema({
     }],
     default_price: { type: Number, require: true },
     max_price: { type: Number },
+    percent_discount: { type: Number, default: 0 },
     sold: { type: Number, default: 0 },
     image_preview: { type: String, require: true },
     vote: { type: Number, default: 0 },

@@ -16,11 +16,14 @@ class ApiController {
         const forgotPassword = req.body.forgotPassword
         const type = (forgotPassword == false) ? 1 : 2
         try {
+            const user = await User.findOne({ username: username })
             if (type == 1) {
-                const user = await User.findOne({ username: username })
                 if (user) {
-                    res.json({ code: 409, message: "Tài khoản này đã tồn tại" })
-                    return
+                    throw "Gmail này đã tồn tại, đăng ký bằng gmail khác"
+                }
+            }else{
+                if(!user){
+                    throw "Không tìm thấy tài khoản"
                 }
             }
             const num = await otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
@@ -105,7 +108,7 @@ class ApiController {
                 descrition: "",
                 image: "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/mnb.png?alt=media&token=8c4b965a-b06d-489e-97f8-fd60a2093da8"
             }
-          await Notification.create(noti)
+            await Notification.create(noti)
             res.json({ code: 200, message: "Tạo tài khoản thành công" })
         } catch (error) {
             console.log(error)
@@ -128,7 +131,7 @@ class ApiController {
             }
             const hashPassword = user.password
             const matches = await bcrypt.compare(password, hashPassword)
-            if (!matches) {
+            if (matches == false) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }
             delete user.password
@@ -136,7 +139,6 @@ class ApiController {
                 user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
             }
             const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
-            console.log(user)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
@@ -148,11 +150,19 @@ class ApiController {
         const token = req.body.token
         try {
             const account = await jwt.verify(token, SECRECT)
-            const user = await User.findOne({ username: account.username })
+            const user = await User.findOne({ username: account.username }).lean()
             if (!user) {
                 return res.json({ code: 404, message: "Token không hợp lệ" })
             }
-            user.password = null
+            const matches = await bcrypt.compare(account.password, user.password)
+            if (matches == false) {
+                throw "Token không hợp lệ"
+            }
+            if (!user.avatar) {
+                user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
+            }
+            delete user.password
+            console.log(user)
             res.json({ code: 200, message: "Đăng nhập thành công", user })
         } catch (error) {
             console.log(error)
@@ -171,6 +181,9 @@ class ApiController {
             const salt = await bcrypt.genSalt(10)
             const hashPass = await bcrypt.hash(password, salt)
             const update = await User.updateOne({ username: username }, { $set: { password: password } })
+            if (!update) {
+                throw "Cập nhật thất bại"
+            }
             res.json({ code: 200, message: "Cập nhật thành công" })
         } catch (error) {
             console.log(error)
@@ -294,6 +307,36 @@ class ApiController {
             })
     }
 
+    async updatePassword(req, res) {
+        const { username, oldPass, newPass } = req.body
+        try {
+            const user = await User.findOne({ username: username })
+            if (!user) {
+                throw "Không tìm thấy user"
+            }
+            if (user.role == true) {
+                throw "Tài khoản không có quyền truy cập"
+            }
+            const matches = await bcrypt.compare(oldPass, user.password)
+            if (matches == false) {
+                throw "Mật khẩu cũ không chính xác"
+            }
+            const salt = await bcrypt.genSalt(10)
+            const hashPass = await bcrypt.hash(newPass, salt)
+            user.password = hashPass
+            await user.save()
+            const token = await jwt.sign({ username: username, password: newPass, role: user.role }, SECRECT)
+            if (!token) {
+                throw "Tạo token mới thất bại"
+            }
+            res.json({ token: token })
+        } catch (error) {
+            console.log(error)
+            res.json(error)
+
+        }
+    }
+
 }
 
 
@@ -305,3 +348,4 @@ class ApiController {
 
 
 module.exports = new ApiController;
+

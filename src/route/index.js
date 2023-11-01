@@ -9,9 +9,10 @@ const favoriteApi = require('./api/favorite.route')
 const bannerApi = require('./api/banner.route')
 const newsApi = require('./api/news.route')
 const notiApi = require('./api/notification.route')
-
+const voucherApi = require('./api/voucher.route')
 
 //route web
+
 var userWeb = require('./web/user.route');
 var productWeb = require('./web/product.route');
 var billWeb = require('./web/bill.route');
@@ -30,6 +31,7 @@ function route(app) {
     app.use('/api/banner', bannerApi) // banner
     app.use('/api/news', newsApi) // banner
     app.use('/api/notification', notiApi) // thông báo
+    app.use('/api/voucher', voucherApi) // voucher
 
     //web
 
@@ -37,11 +39,7 @@ function route(app) {
         res.redirect('/user/login')
     })
 
-    app.post('/brand', (req, res) => {
-       const id = req.body.id
-       const image = req.body.image
-       Brand.findByIdAndUpdate(id,{$set:{image:image}}).then(rs=>res.json(rs)).catch(er=>res.json(er))
-    })
+
 
     app.use('/user', userWeb)
     app.use('/home', productWeb)

@@ -296,7 +296,7 @@ class ApiController {
     updateFullname(req, res) {
         const username = req.body.username
         const fullname = req.body.fullname
-        User.findByIdAndUpdate({ username: username }, { $set: { fullname: fullname } })
+        User.findOneAndUpdate({ username: username }, { $set: { fullname: fullname } })
             .then((rs) => {
                 console.log(rs)
                 res.json({ code: 200, message: fullname })

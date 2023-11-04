@@ -45,7 +45,7 @@ class Controller {
         { username: user.username, password: user.password, role: user.role },
         SECRECT
       );
-      res.redirect("/product");
+      res.redirect("/home/product");
     } catch (error) {
       data.error = error;
       console.log(data);

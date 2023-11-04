@@ -8,22 +8,18 @@ const SECRECT = process.env.SECRECT
 async function checkUser(req, res, next) {
     const username = req.body.username
     const token = req.body.token
-    console.log(token,username)
     try {
         const account = await jwt.verify(token, SECRECT)
-        if(!account){
-            throw "token không tồn tại"
-        }
         if (account.username !== username) {
-            throw "token không hợp lệ"
+            throw ""
         }
         const user = await User.findOne({ username: username, role: false })
         if (!user) {
-            throw "không tìm thấy người dùng"
+            throw ""
         }
         const matches = await bcrypt.compare(account.password, user.password)
         if (!matches) {
-            throw "token hết hạn"
+            throw ""
         }
         delete req.body.token
         next()

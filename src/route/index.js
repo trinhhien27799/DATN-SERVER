@@ -42,7 +42,7 @@ function route(app) {
 
 
     app.use('/user', userWeb)
-    app.use('/product', productWeb)
+    app.use('/home', productWeb)
     app.use('/bill', billWeb)
     app.use('/brand', brandWeb)
 

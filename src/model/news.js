@@ -3,10 +3,15 @@ const Schema = mongoose.Schema
 
 
 
-const Banner = new Schema({
+const News = new Schema({
     image: { type: String, require: true },
-    title: { type: String, require: true },
-    keyword: { type: String },
+    brand: { type: String },
+    content: [{
+        title: { type: String },
+        content: { type: String },
+        image: { type: String },
+        productId: { type: String },
+    }],
     time: { type: Date, default: Date.now }
 }, {
     collection: "Banner"
@@ -14,4 +19,4 @@ const Banner = new Schema({
 
 
 
-module.exports = mongoose.model('Banner', Banner) 
+module.exports = mongoose.model('News', News) 

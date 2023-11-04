@@ -73,7 +73,7 @@
 </div>
 
 
-<form method="post" name="delete-product-form"></form>
+<form method="post" name="delete-form"></form>
 
 
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
@@ -88,7 +88,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
-        <button type="button" class="btn btn-primary" id="btn-delete-product">Continue</button>
+        <button type="button" class="btn btn-primary" id="btn-delete">Continue</button>
       </div>
     </div>
   </div>
@@ -98,7 +98,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var id_product
-    var deleteForm = document.forms['delete-product-form']
+    var deleteForm = document.forms['delete-form']
 
     const deleteModal = document.getElementById('deleteModal')
     deleteModal.addEventListener('show.bs.modal', event => {
@@ -106,9 +106,9 @@
       id_product = button.getAttribute('data-bs-id')
     })
 
-    var btn_del = document.getElementById('btn-delete-product')
+    var btn_del = document.getElementById('btn-delete')
     btn_del.onclick = function () {
-      deleteForm.action = 'product/delete/' + id_product + "?_method=DELETE"
+      deleteForm.action = '/product/delete/' + id_product + "?_method=DELETE"
       deleteForm.submit()
     }
   });

@@ -14,15 +14,15 @@ class ApiController {
     async insertOtp(req, res) {
         const username = req.body.username
         const forgotPassword = req.body.forgotPassword
-        const type = (forgotPassword == true) ? 2 : 1
+        const type = (forgotPassword == false) ? 1 : 2
         try {
             const user = await User.findOne({ username: username })
             if (type == 1) {
                 if (user) {
                     throw "Gmail này đã tồn tại, đăng ký bằng gmail khác"
                 }
-            } else {
-                if (!user) {
+            }else{
+                if(!user){
                     throw "Không tìm thấy tài khoản"
                 }
             }
@@ -296,7 +296,7 @@ class ApiController {
     updateFullname(req, res) {
         const username = req.body.username
         const fullname = req.body.fullname
-        User.findOneAndUpdate({ username: username }, { $set: { fullname: fullname } })
+        User.findByIdAndUpdate({ username: username }, { $set: { fullname: fullname } })
             .then((rs) => {
                 console.log(rs)
                 res.json({ code: 200, message: fullname })

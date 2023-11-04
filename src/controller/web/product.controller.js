@@ -1,7 +1,4 @@
 const Product = require("../../model/product")
-const Variations = require("../../model/variations")
-const Description = require("../../model/description")
-const Banner = require("../../model/news")
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 
 class Controller {
@@ -33,86 +30,193 @@ class Controller {
 
   newProduct(req, res) {
     const body = req.body
-    console.log(body)
+    body.max_price = body.default_price
     Product.create(body)
       .then((rs) => {
         console.log(rs)
-        res.redirect('/product')
+        res.redirect('/home/product')
       })
       .catch((err) => res.json(err))
   }
 
-
-  async deleteProduct(req, res) {
+  async putOption(req, res) {
     const id = req.params.id
+    const body = req.body
+    var options = body.options
+    delete body.options
+    body.increase_price = +body.increase_price
+
+    if (req.file != null && req.file != undefined) {
+      const filename = req.file.filename;
+      const filepath = req.file.path;
+      const url = await uploadImage(filepath, filename);
+      body.image = url;
+    }
     try {
-      const product = await Product.findByIdAndDelete(id)
+      var product = await Product.findById(id)
       if (!product) {
         throw 'Product not found!'
       }
-      const variations = await Variations.find({ productId: id })
-      if (variations && variations.length > 0) {
-        for (let item of variations) {
-          deleteImage(item.image)
+      if (options === 'colors') {
+        product.options.colors.push(body)
+        if (product.options.colors.length == 1) {
+          product.image_preview = body.image
         }
-        await Variations.deleteMany({ productId: id })
+      } else if (options === 'rams') {
+        product.options.rams.push(body)
+      } else {
+        product.options.roms.push(body)
       }
-      console.log("Delete product successful")
-      res.redirect('/product')
-    } catch (error) {
-      console.log(error)
+      let color_price = 0
+      let ram_price = 0
+      let rom_price = 0
+
+      for (let i = 0; i < product.options.colors.length; i++) {
+        if (color_price < product.options.colors[i].increase_price) {
+          color_price = product.options.colors[i].increase_price
+        }
+      }
+
+
+      for (let i = 0; i < product.options.rams.length; i++) {
+        if (ram_price < product.options.rams[i].increase_price) {
+          ram_price = product.options.rams[i].increase_price
+        }
+      }
+
+
+      for (let i = 0; i < product.options.roms.length; i++) {
+        if (rom_price < product.options.roms[i].increase_price) {
+          rom_price = product.options.roms[i].increase_price
+        }
+      }
+
+      product.max_price = product.default_price + color_price + ram_price + rom_price
+      await product.save()
+      res.redirect(`/home/product/${product._id}`)
+    } catch (err) {
+      console.log(err)
       res.json(err)
     }
   }
 
+  deleteProduct(req, res) {
+    const id = req.params.id
+    Product.findByIdAndDelete(id)
+      .then((product) => {
+        if (!product) {
+          throw 'Product not found!'
+        }
+        console.log("Delete product successful")
+        for (let i = 0; i < product.options.colors.length; i++) {
+          deleteImage(product.options.colors[i].image)
+        }
+        res.redirect('/home/product')
+      })
+      .catch((err) => {
+        console.log(err)
+        res.json(err)
+      })
+  }
+
   async updateProduct(req, res) {
     const body = req.body
+    body.default_price = +body.default_price
     const id = req.params.id
     console.log(id)
     try {
+
+
+      const product = await Product.findById(id)
+      if (!product) {
+        throw ""
+      }
+      body.max_price = body.default_price + product.max_price - product.default_price
       const update = await Product.findOneAndUpdate({ _id: id }, { $set: body })
-      console.log(update)
       if (!update) {
         throw ""
       }
-      res.redirect(`/product`)
+      res.redirect(`/home/product/${id}`)
     } catch (error) {
-      console.log(error)
-      res.json(error)
+      console.log(err)
+      res.json(err)
     }
   }
 
-  async addDescription(req, res) {
-    const data = req.body
-    const id = req.params.id
+  async deleteOption(req, res) {
+    const id_product = req.params.id_product
+    const id_option = req.params.id_option
+    const option = req.params.option
+    console.log(id_product, option, id_option)
     try {
-      const product = await Product.findById(id)
+      const product = await Product.findOne({ _id: id_product })
       if (!product) {
-        const banner = await Banner.findById(id)
-        if (!banner) {
-          throw "Không tìm id tương ứng"
+        throw "Không tìm thấy sản phẩm"
+      }
+      if (option == "color") {
+        for (let i = 0; i < product.options.colors.length; i++) {
+          if (product.options.colors[i]._id == id_option) {
+            console.log(product.options.colors[i])
+            if (i == 0) {
+              console.log("one")
+              product.image_preview = product.options.colors[1].image
+            }
+            deleteImage(product.options.colors[i].image)
+            product.options.colors = product.options.colors.filter(function (item) {
+              return item._id != id_option
+            })
+          }
+        }
+      } else if (option == "ram") {
+        for (let i = 0; i < product.options.rams.length; i++) {
+          if (product.options.rams[i]._id == id_option) {
+            console.log(product.options.rams[i])
+            product.options.rams = product.options.rams.filter(function (item) {
+              return item._id != id_option
+            })
+          }
+        }
+      } else {
+        for (let i = 0; i < product.options.roms.length; i++) {
+          if (product.options.roms[i]._id == id_option) {
+            console.log(product.options.roms[i])
+            product.options.roms = product.options.roms.filter(function (item) {
+              return item._id != id_option
+            })
+          }
         }
       }
-
-      if (req.file != null) {
-        const filename = req.file.filename
-        const filepath = req.file.path
-        const url = await uploadImage(filepath, filename);
-        data.image = url
-      }
-      if (Object.keys(data).length == 0) {
-        throw "Không thể tạo dữ liệu trống"
-      }
-      data.id_follow = id
-      const description = await Description.create(data)
-      if (!description) {
-        throw "Thêm mô tả thất bại"
-      }
-      res.redirect(`/product/description/${id}`)
+      await product.save()
+      res.redirect(`/home/product/${id_product}`)
     } catch (error) {
       console.log(error)
-      res.json(error)
+      res.json({ code: 500, message: "Đã xảy ra lỗi" })
     }
+  }
+
+  async putDescription(req, res) {
+    const data = req.body
+    const id_product = req.params.id
+    if (req.file != null && req.file != undefined) {
+      const filename = req.file.filename
+      const filepath = req.file.path
+      const url = await uploadImage(filepath, filename);
+      data.image = url
+    }
+    if (Object.keys(data).length > 0) {
+      try {
+        const product = await Product.findById(id_product)
+        if (!product) {
+          throw "product not found"
+        }
+        product.description.push(data)
+        await product.save()
+      } catch (error) {
+        console.log(error)
+        res.json(error)
+      }
+    }
+    res.redirect(`/home/product/${id_product}`)
   }
 
   async deleteDescription(req, res) {
@@ -137,96 +241,6 @@ class Controller {
     } catch (error) {
       console.log(error)
       res.json({ code: 500, message: "Đã xảy ra lỗi" })
-    }
-  }
-
-  async pageVariations(req, res) {
-    const productId = req.params.id
-    try {
-      const data = await Variations.find({ productId: productId }).sort({ _id: -1 })
-      res.render('product/variations.ejs', { layout: './layouts/main', data, productId: productId })
-    } catch (error) {
-      res.json(error)
-    }
-
-  }
-
-  pageNewVariations(req, res) {
-    const productId = req.params.id
-    res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId })
-  }
-
-  async NewVariations(req, res) {
-    const data = req.body
-    const productId = req.params.id
-    data.productId = productId
-
-    try {
-      if (!req.file) {
-        throw "e1"
-      }
-      const filename = req.file.filename
-      const filepath = req.file.path
-      const url = await uploadImage(filepath, filename)
-      console.log("url " + url)
-      data.image = url
-      const variations = await Variations.create(data)
-      if (!variations) {
-        throw ""
-      }
-      const product = await Product.findById(productId)
-      if (!product) {
-        throw ""
-      }
-
-      if (!product.min_price) {
-        product.min_price = data.price
-
-      } else {
-        if (product.min_price > data.price) {
-          product.min_price = data.price
-
-        }
-      }
-      if (!product.max_price) {
-        product.max_price = data.price
-
-      } else {
-        if (product.max_price < data.price) {
-          product.max_price = data.price
-
-        }
-      }
-      if (!product.image_preview) {
-        product.image_preview = data.image
-
-      }
-      product.total_quantity += variations.quantity
-
-
-
-      await product.save()
-
-      res.redirect(`/product/${productId}/variations`)
-    } catch (error) {
-      console.log(error)
-      res.json(error)
-    }
-
-  }
-
-
-  async pageDescription(req, res) {
-    const id = req.params.id
-    try {
-      const descriptions = await Description.find({ id_follow: id })
-      if (!descriptions) {
-        throw "Không lấy được mô tả sản phẩm"
-      }
-      res.render('description/description.ejs', { layout: './layouts/main', id_follow: id, descriptions: descriptions })
-    } catch (error) {
-      console.log(error)
-      res.json(error)
     }
   }
 }

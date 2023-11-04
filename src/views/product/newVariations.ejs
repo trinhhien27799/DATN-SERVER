@@ -1,0 +1,84 @@
+<div class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="h2">Variations</h1>
+  <div class="btn-toolbar mb-2 mb-md 0">
+    <div class="btn-group me-2">
+      <button class="btn btn-sm btn-outline-secondary">?</button>
+    </div>
+  </div>
+</div>
+
+<div class="col py-3">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/product/<%=productId%>/variations">Variations</a></li>
+          <li class="breadcrumb-item active">New Variations</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col text-end fw-lighter">
+      <b>Product</b>
+    </div>
+  </div>
+</div>
+
+<form action="/home/product/<%=productId%>/variations/add" method="POST" enctype="multipart/form-data">
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <img id="preview-image" style="display: none;height: 100px;width: 100px;" />
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="product_name">image:</label>
+      <input type="file" class="form-control" name="image" id="image" onchange="showPreviewImage(event)" required>
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+
+    <div class="col">
+      <label for="color">color:</label>
+      <input class="form-control" type="text" id="color" name="color" required>
+
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="ram">ram:</label>
+      <input class="form-control" type="text" id="ram" name="ram" required>
+    </div>
+
+  </div>
+
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="rom">rom:</label>
+      <input class="form-control" type="text" id="rom" name="rom" required>
+    </div>
+
+  </div>
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="quantity">quantity:</label>
+      <input class="form-control" type="text" id="quantity" name="quantity" required>
+    </div>
+  </div>
+
+  <div class="row form-group mb-4">
+    <div class="col">
+      <label for="price">price:</label>
+      <input class="form-control" type="text" id="price" name="price" required>
+    </div>
+  </div>
+
+  <div class="form-group mb-4">
+    <button type="submit" class="btn btn-primary">Add Product</button>
+  </div>
+</form>

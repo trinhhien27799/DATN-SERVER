@@ -2,14 +2,19 @@ require('dotenv').config()
 const Product = require('../../model/product')
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 const Brand = require('../../model/brand')
+const Variations = require('../../model/variations')
+const Description = require('../../model/description')
 
 class ApiController {
     async getAll(req, res) {
         try {
             const products = await Product.find({}).sort({ time: -1 }).lean()
-            products.forEach((product) => {
+            if (!products) {
+                throw "Không tìm thấy sản phẩm"
+            }
+            products.forEach(async (product) => {
                 delete product.description
-                delete product.options
+
             })
 
             res.json(products)
@@ -27,10 +32,24 @@ class ApiController {
             }
             const regex = new RegExp("^" + product.brand_name + "$", "i")
             const brand = await Brand.findOne({ brand: { $regex: regex } })
-            if(brand){
+            if (brand) {
                 product.brand_logo = brand.image
             }
-            console.log(product.brand_logo)
+            const variations = await Variations.find({ productId: id_product }).lean()
+            if (variations) {
+                variations.forEach((item) => delete item.productId)
+                product.variations = variations
+            }
+            const description = await Description.find({ id_follow: id_product }).lean()
+            if (description) {
+                description.forEach((item) => {
+                    delete item._id
+                    delete item.id_follow
+                    delete item.__v
+                })
+                product.description = description
+            }
+            delete product.__v
             res.json(product)
         } catch (error) {
             console.log(error)

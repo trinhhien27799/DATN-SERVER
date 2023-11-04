@@ -22,7 +22,7 @@ router.post('/address/update', checkUser, controller.updateAddress)
 router.post('/address/delete', checkUser, controller.deleteAddress)
 
 //Cập nhật
-router.post('/update/avatar', checkUser, upload.single('avatar'), controller.updateAvatar)
+router.post('/update/avatar',  upload.single('avatar'),checkUser, controller.updateAvatar)
 router.post('/update/fullname', checkUser, controller.updateFullname)
 router.post('/update/password', checkUser, controller.updatePassword)
 

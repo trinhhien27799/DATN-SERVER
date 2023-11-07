@@ -4,6 +4,7 @@ const router = express.Router()
 const upload = require('../../utils/handleFile')
 
 
+
 router.post('/add', controller.newProduct)
 router.get('', controller.pageHome)
 router.get('/new', controller.pageNewProduct)

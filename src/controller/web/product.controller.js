@@ -1,34 +1,52 @@
+
 const Product = require("../../model/product")
 const Variations = require("../../model/variations")
 const Description = require("../../model/description")
 const Banner = require("../../model/news")
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 
+
 class Controller {
   async pageHome(req, res) {
     try {
-      const array = await Product.find({}).sort({ time: -1 })
-      res.render('product/viewProduct.ejs', { layout: 'layouts/main', data: array })
+      const array = await Product.find({});
+      array.forEach((product) => {
+        delete product.description;
+        product.product_name = `${product.product_name} (${product.rom})`;
+      });
+      res.render("product/viewProduct.ejs", {
+        layout: "layouts/main",
+        data: array,
+      });
     } catch (error) {
-      res.json(error)
+      res.json(error);
     }
   }
 
-  async detailProduct(req, res) {
-    const id = req.params.id
+  async editProduct(req, res) {
+    const id = req.params.id;
     try {
-      const product = await Product.findById(id)
+      const product = await Product.findById(id);
+      const arrBrand = await Brand.find();
+
       if (!product) {
-        throw 'Đã xảy ra lỗi'
+        throw "Đã xảy ra lỗi";
       }
-      res.render('product/detailProduct.ejs', { layout: 'layouts/main', product })
+      res.render("product/editProduct.ejs", {
+        layout: "layouts/main",
+        product,
+        arrBrand
+      });
     } catch (error) {
-      res.json({ code: 500, message: error })
+      res.json({ code: 500, message: error });
     }
   }
 
-  pageNewProduct(req, res) {
-    res.render('product/newProduct.ejs', { layout: './layouts/main' })
+  async pageNewProduct(req, res) {
+    const arrBrand = await Brand.find();
+    console.log(arrBrand);
+
+    res.render("product/newProduct.ejs", { layout: "./layouts/main", arrBrand });
   }
 
   newProduct(req, res) {
@@ -38,9 +56,11 @@ class Controller {
       .then((rs) => {
         console.log(rs)
         res.redirect('/product')
+
       })
-      .catch((err) => res.json(err))
+      .catch((err) => res.json(err));
   }
+
 
 
   async deleteProduct(req, res) {
@@ -48,7 +68,7 @@ class Controller {
     try {
       const product = await Product.findByIdAndDelete(id)
       if (!product) {
-        throw 'Product not found!'
+        throw "Product not found!";
       }
       const variations = await Variations.find({ productId: id })
       if (variations && variations.length > 0) {
@@ -119,12 +139,12 @@ class Controller {
   async deleteDescription(req, res) {
     const id_product = req.params.id_product
     const id_description = req.params.id_description
-
     try {
-      const product = await Product.findOne({ _id: id_product })
+      const product = await Product.findOne({ _id: id_product });
       if (!product) {
-        throw "Không tìm thấy sản phẩm"
+        throw "Không tìm thấy sản phẩm";
       }
+
 
       for (let i = 0; i < product.description.length; i++) {
         if (product.description[i]._id == id_description) {
@@ -136,8 +156,8 @@ class Controller {
       // res.json(product.description)
       res.redirect(`/home/product/${id_product}`)
     } catch (error) {
-      console.log(error)
-      res.json({ code: 500, message: "Đã xảy ra lỗi" })
+      console.log(error);
+      res.json({ code: 500, message: "Đã xảy ra lỗi" });
     }
   }
 
@@ -214,12 +234,14 @@ class Controller {
       res.json(error)
     }
 
+
   }
 
 
   async pageDescription(req, res) {
     const id = req.params.id
     try {
+
       const descriptions = await Description.find({ id_follow: id })
       if (!descriptions) {
         throw "Không lấy được mô tả sản phẩm"
@@ -230,6 +252,7 @@ class Controller {
       res.json(error)
     }
   }
+
 
   async deleteVariations(req, res) {
     const id = req.params.id
@@ -244,8 +267,9 @@ class Controller {
     } catch (error) {
       console.log(error)
       res.json(error)
+
     }
   }
 }
 
-module.exports = new Controller; 
+module.exports = new Controller();

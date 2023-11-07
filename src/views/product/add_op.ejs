@@ -1,0 +1,89 @@
+<div
+  class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">Product</h1>
+  <div class="btn-toolbar mb-2 mb-md 0">
+    <div class="btn-group me-2">
+      <button class="btn btn-sm btn-outline-secondary">?</button>
+    </div>
+  </div>
+</div>
+
+<div class="col py-3">
+  <div class="row">
+    <div class="col">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/product">Product</a></li>
+          <li class="breadcrumb-item active">Add rom product</li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col text-end fw-lighter">
+        <b>Product</b>
+    </div>
+  </div>
+</div>
+
+
+
+<form action="/home/product/add_op" method="POST">
+  
+
+  <div class="row form-group mb-4" >
+    <div class="col">
+        <label for="tel">Rom</label>
+        <input
+          type="text"
+          class="form-control"
+          id="rom"
+          name="rom"
+          placeholder="Rom"
+          required
+        />
+      </div>
+      <div class="col">
+        <label for="tel">Ram</label>
+        <input
+          type="text"
+          class="form-control"
+          id="ram"
+          name="ram"
+          placeholder="Ram"
+          required
+        />
+      </div>
+ 
+  </div>
+  <div class="row form-group mb-4" >
+    <div class="col">
+      <label for="lastName">Price</label>
+      <input
+        type="number"
+        class="form-control"
+        id="price"
+        name="price"
+        placeholder="Price"
+        required
+      />
+    </div>
+  <div class="col">
+    <label for="default_price">Discount:</label>
+    <input
+      class="form-control"
+      type="number"
+      id="percent_discount"
+      name="percent_discount"
+      required
+    />
+  </div>
+  </div>
+
+  <input type="text" name="id" value="<%= id %>" hidden>
+
+ 
+
+  <input class="btn btn-primary" type="submit" value="Add Rom Product">
+  
+</form>
+

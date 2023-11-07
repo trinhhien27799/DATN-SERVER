@@ -1,6 +1,6 @@
-<div
-  class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
->
+
+<div class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+
   <h1 class="h2">Product</h1>
   <div class="btn-toolbar mb-2 mb-md 0">
     <div class="btn-group me-2">
@@ -14,7 +14,7 @@
     <div class="col">
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="/home/product">Product</a></li>
+          <li class="breadcrumb-item"><a href="/product">Product</a></li>
           <li class="breadcrumb-item active">New product</li>
         </ol>
       </nav>
@@ -25,65 +25,47 @@
   </div>
 </div>
 
-<form action="/home/product/add" method="POST">
+<form action="/product/add" method="POST">
+
   <div class="row form-group mb-4">
     <div class="col">
-      <label for="product_name">Product name:</label>
-      <input
-        class="form-control"
-        type="text"
-        id="product_name"
-        name="product_name"
-        required
-      />
-    </div>
-  
-    <div class="col">
-      <label style="margin: 5px;" for="lastName">Brand</label>
-      <select id="brand_name" name="brand_name" class="form-select">
-        <% for(var i=0; i <arrBrand.length; i++) { %>
-          <option value="<%= arrBrand[i].brand %>">
-            <%= arrBrand[i].brand %>
-          </option>
-          <%}%>
+
+      <label for="product_type">Chọn loại sản phẩm:</label>
+      <select id="product_type" name="product_type">
+        <option value="Điện thoại">Điện thoại</option>
+        <option value="Phụ kiện">Phụ kiện</option>
+
       </select>
     </div>
   </div>
 
   <div class="row form-group mb-4">
     <div class="col">
-      <label for="default_price">Price:</label>
-      <input
-        class="form-control"
-        type="number"
-        step="1000"
-        id="price"
-        name="price"
-        required
-      />
+
+      <label for="product_name">Product name:</label>
+      <input class="form-control" type="text" id="product_name" name="product_name" required>
     </div>
+  </div>
+
+  <div class="row form-group mb-4">
+
     <div class="col">
-      <label for="default_price">Discount:</label>
-      <input
-        class="form-control"
-        type="number"
-        id="percent_discount"
-        name="percent_discount"
-        required
-      />
+
+      <label for="brand_name">Brand name:</label>
+      <input class="form-control" type="text" id="brand_name" name="brand_name" required>
+
     </div>
   </div>
 
   <div class="row form-group mb-4">
     <div class="col">
-      <label for="default_price">Rom:</label>
-      <input class="form-control" type="text" id="rom" name="rom" required />
+      <label for="percent_discount">Percent_discount:</label>
+      <input class="form-control" type="number" step="1" id="percent_discount" name="percent_discount" value="0"
+        required>
     </div>
-    <div class="col">
-      <label for="default_price">Ram:</label>
-      <input class="form-control" type="text" id="ram" name="ram" required />
-    </div>
+
   </div>
+
 
   <div class="form-group mb-4">
     <button type="submit" class="btn btn-primary">Add Product</button>

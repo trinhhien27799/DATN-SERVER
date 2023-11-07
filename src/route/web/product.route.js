@@ -4,16 +4,21 @@ const router = express.Router()
 const upload = require('../../utils/handleFile')
 
 
-router.post('/product/add', controller.newProduct)
-router.get('/product', controller.pageHome)
-router.get('/product/new', controller.pageNewProduct)
-router.get('/product/:id', controller.detailProduct)
-router.put('/product/update/:id', controller.updateProduct)
-router.put('/product/option/:id', upload.single('image'), controller.putOption)
-router.put('/product/description/:id', upload.single('image'), controller.putDescription)
-router.delete('/product/delete/:id', controller.deleteProduct)
-router.delete('/product/:id_product/delete/description/:id_description', controller.deleteDescription)
-router.delete('/product/:id_product/delete/:option/:id_option', controller.deleteOption)
+router.post('/add', controller.newProduct)
+router.get('', controller.pageHome)
+router.get('/new', controller.pageNewProduct)
+
+router.get('/:id/variations/add', controller.pageNewVariations)
+router.post('/:id/variations/add', upload.single('image'), controller.NewVariations)
+router.get('/:id/variations', controller.pageVariations)
+router.delete('/delete/:id', controller.deleteProduct)
+router.delete('/:product_id/variations/delete/:id', controller.deleteVariations)
+router.get('/update/:id', controller.detailProduct)
+router.put('/update/:id', controller.updateProduct)
+router.get('/description/:id', controller.pageDescription)
+router.post('/description/:id', upload.single('image'), controller.addDescription)
+
+router.delete('/:id_product/delete/description/:id_description', controller.deleteDescription)
 
 
 module.exports = router

@@ -45,7 +45,7 @@ class Controller {
         { username: user.username, password: user.password, role: user.role },
         SECRECT
       );
-      res.redirect("/home/product");
+      res.redirect("/product");
     } catch (error) {
       data.error = error;
       console.log(data);
@@ -104,14 +104,14 @@ class Controller {
     const otp = body.code;
     delete body.code;
     try {
-      const otpHolder = await Otp.find({ username: body.username });
+      const otpHolder = await Otp.findOne({ username: body.username }).sort({ time: -1})
       if (!otpHolder) {
         throw "OTP authentication failed!";
       }
       if (otpHolder.length == 0) {
         throw "Please verify your email before registering";
       }
-      const hashOtp = otpHolder[otpHolder.length - 1].otp;
+      const hashOtp = otpHolder.otp;
       const matches = await bcrypt.compare(otp, hashOtp);
       if (!matches) {
         throw "OTP not correct!";
@@ -184,7 +184,7 @@ class Controller {
     });
   }
 
-  async editPost(req, res) {}
+  async editPost(req, res) { }
 
   async delete(req, res) {
     const id = req.params.id;

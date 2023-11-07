@@ -1,10 +1,10 @@
 <div class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-  <h1 class="h2">Product</h1>
+  <h1 class="h2">Variations</h1>
   <div class="col-md-3">
   </div>
   <div class="btn-toolbar mb-2 mb-md 0">
     <div class="btn-group me-2">
-      <a href="product/new" class="btn btn-sm btn-outline-secondary">+ New Product</a>
+      <a href=" /product/<%=productId%>/variations/add" class="btn btn-sm btn-outline-secondary">+ New variations</a>
     </div>
   </div>
 </div>
@@ -15,12 +15,12 @@
   <table class="table table-striped table-sm">
     <thead>
       <tr>
-
-        <th scope="col">Product's name</th>
-        <th scope="col">Brand</th>
-        <th scope="col">Percent discount</th>
-        <th scope="col">Product type</th>
-        <th scope="col">Created at</th>
+        <th scope="col">image</th>
+        <th scope="col">color</th>
+        <th scope="col">ram</th>
+        <th scope="col">rom</th>
+        <th scope="col">quantity</th>
+        <th scope="col">price</th>
         <th scope="col" class="text-end">Action</th>
       </tr>
     </thead>
@@ -29,37 +29,29 @@
       <% for (let sp of data) {%>
         <tr class="align-middle">
           <td>
-            <%= sp.product_name %>
+            <img style="width: 50px;height: 50px;" src="<%= sp.image %>" alt="error" />
           </td>
           <td>
-            <%= sp.brand_name %>
+            <%= sp.color %>
           </td>
           <td>
-            <%= sp.percent_discount %>
+            <%= sp.ram %>
           </td>
           <td>
-            <%= sp.product_type %>
+            <%= sp.rom %>
           </td>
           <td>
-            <%= sp.time.toLocaleString('en') %>
+            <%= sp.quantity %>
+          </td>
+          <td>
+            <%= sp.price %>
           </td>
           <td class="text-end">
 
             <div class="d-flex flex-row justify-content-end gap-2">
 
-
-
-              <a href="/product/<%= sp._id %>/variations" type="button" class="btn btn-primary btn-small">
-                <i class="bi bi-eye"></i>
-              </a>
-
-              <a href="/product/update/<%=sp._id%>" type="button" class="btn btn-warning btn-small">
+              <a href=" /product/<%=sp._id%>" type="button" class="btn btn-warning btn-small">
                 <i class="bi bi-pencil"></i>
-              </a>
-
-
-              <a href="/product/description/<%=sp._id%>" type="button" class="btn btn-warning btn-small">
-                <i class="bi bi-journal"></i>
               </a>
 
               <div>
@@ -75,7 +67,7 @@
 </div>
 
 
-<form method="post" name="delete-product-form"></form>
+<form method="post" name="delete-form"></form>
 
 
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
@@ -90,7 +82,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
-        <button type="button" class="btn btn-primary" id="btn-delete-product">Continue</button>
+        <button type="button" class="btn btn-primary" id="btn-delete">Continue</button>
       </div>
     </div>
   </div>
@@ -99,18 +91,18 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    var id_product
-    var deleteForm = document.forms['delete-product-form']
+    var id
+    var deleteForm = document.forms['delete-form']
 
     const deleteModal = document.getElementById('deleteModal')
     deleteModal.addEventListener('show.bs.modal', event => {
       const button = event.relatedTarget;
-      id_product = button.getAttribute('data-bs-id')
+      id = button.getAttribute('data-bs-id')
     })
 
-    var btn_del = document.getElementById('btn-delete-product')
+    var btn_del = document.getElementById('btn-delete')
     btn_del.onclick = function () {
-      deleteForm.action = 'product/delete/' + id_product + "?_method=DELETE"
+      deleteForm.action = '/product/<%=productId%>/variations/delete/' + id + "?_method=DELETE"
       deleteForm.submit()
     }
   });

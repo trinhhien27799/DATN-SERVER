@@ -172,6 +172,16 @@ class Controller {
 
   }
 
+  async detailProduct(req, res) {
+    const productId = req.params.id
+    try {
+      const data = await Product.findById(productId)
+      res.render('product/detailProduct.ejs', { layout: './layouts/main', product: data })
+    } catch (error) {
+      res.json(error)
+    }
+  }
+
   pageNewVariations(req, res) {
     const productId = req.params.id
     res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId })

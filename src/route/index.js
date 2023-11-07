@@ -17,6 +17,7 @@ var userWeb = require('./web/user.route');
 var productWeb = require('./web/product.route');
 var billWeb = require('./web/bill.route');
 var brandWeb = require('./web/brand.route');
+var bannerWeb = require('./web/banner.route');
 
 
 function route(app) {
@@ -45,6 +46,7 @@ function route(app) {
     app.use('/home', productWeb)
     app.use('/bill', billWeb)
     app.use('/brand', brandWeb)
+    app.use('/banner', bannerWeb)
 
 }
 

@@ -15,11 +15,11 @@
   <table class="table table-striped table-sm">
     <thead>
       <tr>
-
         <th scope="col">Product's name</th>
         <th scope="col">Brand</th>
         <th scope="col">Rom</th>
         <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
         <th scope="col">Created at</th>
         <th scope="col" class="text-end">Action</th>
       </tr>
@@ -35,10 +35,13 @@
             <%= sp.brand_name %>
           </td>
           <td>
-            <%= sp.options.roms?sp.options.roms[0]?sp.options.roms[0].size:"Trống":"Trống" %>
+            <%= sp.rom %>
           </td>
           <td>
-            <%= sp.default_price.toLocaleString() %> - <%= sp.max_price.toLocaleString() %> VND
+            <%= sp.price.toLocaleString() %> VND
+          </td>
+          <td>
+            <%= sp.quantity.toLocaleString() %>
           </td>
           <td>
             <%= sp.time.toLocaleString('en') %>
@@ -51,6 +54,10 @@
 
               <a href="/product/view/<%= sp._id %>" type="button" class="btn btn-primary btn-small">
                 <i class="bi bi-eye"></i>
+              </a>
+
+              <a href="/home/product/add_op/<%= sp._id %>" type="button" class="btn btn-info btn-small">
+                <i class="bi bi-building-add"></i>
               </a>
 
               <a href="/home/product/<%=sp._id%>" type="button" class="btn btn-warning btn-small">

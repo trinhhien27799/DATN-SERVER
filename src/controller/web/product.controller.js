@@ -3,6 +3,7 @@ const Product = require("../../model/product")
 const Variations = require("../../model/variations")
 const Description = require("../../model/description")
 const Banner = require("../../model/news")
+const Brand = require("../../model/brand")
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 
 

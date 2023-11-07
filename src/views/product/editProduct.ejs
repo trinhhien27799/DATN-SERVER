@@ -44,17 +44,16 @@
     </div>
 
     <div class="col">
-        <label for="tel">Brand name</label>
-        <input
-          type="text"
-          class="form-control"
-          id="brand_name"
-          name="brand_name"
-          value="<%=product.brand_name%>"
-          placeholder="Brand name"
-          required
-        />
-      </div>
+      <label style="margin: 5px;" for="lastName">Brand</label>
+      <select id="brand_name" name="brand_name" class="form-select">
+      <option value="<%= product.brand_name %>"><%= product.brand_name %></option>
+        <% for(var i=0; i <arrBrand.length; i++) { %>
+          <option value="<%= arrBrand[i].brand %>">
+            <%= arrBrand[i].brand %>
+          </option>
+          <%}%>
+      </select>
+    </div>
    
   </div>
 

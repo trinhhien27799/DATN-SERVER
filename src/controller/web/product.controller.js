@@ -3,7 +3,9 @@ const Product = require("../../model/product")
 const Variations = require("../../model/variations")
 const Description = require("../../model/description")
 const Banner = require("../../model/news")
+const Brand = require("../../model/brand")
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
+const brand = require("../../model/brand")
 
 
 class Controller {
@@ -23,30 +25,18 @@ class Controller {
     }
   }
 
-  async editProduct(req, res) {
-    const id = req.params.id;
-    try {
-      const product = await Product.findById(id);
-      const arrBrand = await Brand.find();
-
-      if (!product) {
-        throw "Đã xảy ra lỗi";
-      }
-      res.render("product/editProduct.ejs", {
-        layout: "layouts/main",
-        product,
-        arrBrand
-      });
-    } catch (error) {
-      res.json({ code: 500, message: error });
-    }
-  }
 
   async pageNewProduct(req, res) {
-    const arrBrand = await Brand.find();
-    console.log(arrBrand);
-
-    res.render("product/newProduct.ejs", { layout: "./layouts/main", arrBrand });
+    try {
+      const arrBrand = await Brand.find({})
+      if (!brand) {
+        throw ""
+      }
+      res.render("product/newProduct.ejs", { layout: "./layouts/main", brand: arrBrand });
+    } catch (error) {
+      console.log(error)
+      res.json(error)
+    }
   }
 
   newProduct(req, res) {

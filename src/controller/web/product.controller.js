@@ -12,10 +12,6 @@ class Controller {
   async pageHome(req, res) {
     try {
       const array = await Product.find({});
-      array.forEach((product) => {
-        delete product.description;
-        product.product_name = `${product.product_name} (${product.rom})`;
-      });
       res.render("product/viewProduct.ejs", {
         layout: "layouts/main",
         data: array,
@@ -60,13 +56,7 @@ class Controller {
       if (!product) {
         throw "Product not found!";
       }
-      const variations = await Variations.find({ productId: id })
-      if (variations && variations.length > 0) {
-        for (let item of variations) {
-          deleteImage(item.image)
-        }
-        await Variations.deleteMany({ productId: id })
-      }
+      await Variations.deleteMany({ productId: id })
       console.log("Delete product successful")
       res.redirect('/product')
     } catch (error) {
@@ -143,7 +133,6 @@ class Controller {
         }
       }
       await product.save()
-      // res.json(product.description)
       res.redirect(`/home/product/${id_product}`)
     } catch (error) {
       console.log(error);

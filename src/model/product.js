@@ -5,7 +5,6 @@ const Product = new Schema(
   {
     product_name: { type: String, require: true },
     brand_name: { type: String, require: true },
-
     percent_discount: { type: Number, default: 0 },
     image_preview: { type: String },
     vote: { type: Number, default: 0 },
@@ -14,7 +13,8 @@ const Product = new Schema(
     product_type: { type: String, require: true, default: "Điện thoại" },
     min_price: { type: Number },
     max_price: { type: Number },
-    total_quantity: { type: Number, require: true, default: 0 }
+    total_quantity: { type: Number, require: true, default: 0 },
+    
 }, {
     collection: "Product"
 });

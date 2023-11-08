@@ -12,35 +12,33 @@ class ApiController {
             if (!products) {
                 throw "Không tìm thấy sản phẩm"
             }
-            products.forEach(async (product) => {
-                delete product.description
-
-            })
-
             res.json(products)
         } catch (error) {
-            res.json({ code: 500, message: "error" })
+            console.log(error)
+            res.json(error)
         }
 
     }
     async getItem(req, res) {
-        const id_product = req.params.id
+        const product_id = req.params.id
         try {
-            const product = await Product.findOne({ _id: id_product }).lean()
+            const product = await Product.findOne({ _id: product_id }).lean()
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
-            const regex = new RegExp("^" + product.brand_name + "$", "i")
-            const brand = await Brand.findOne({ brand: { $regex: regex } })
+            const brand = await Brand.findOne({ brand: product.brand_name })
             if (brand) {
                 product.brand_logo = brand.image
             }
-            const variations = await Variations.find({ productId: id_product }).lean()
+            const variations = await Variations.find({ productId: product_id }).lean()
             if (variations) {
-                variations.forEach((item) => delete item.productId)
+                variations.forEach((item) => {
+                    delete item.productId
+                    delete item.__v
+                })
                 product.variations = variations
             }
-            const description = await Description.find({ id_follow: id_product }).lean()
+            const description = await Description.find({ id_follow: product_id }).lean()
             if (description) {
                 description.forEach((item) => {
                     delete item._id
@@ -95,10 +93,9 @@ class ApiController {
     }
 
     async brand(req, res) {
-        const brand = req.params.name
-        const regex = new RegExp("^" + brand + "$", "i")
+        const brand_name = req.params.name
         try {
-            const brand = await Brand.findOne({ brand: { $regex: regex } })
+            const brand = await Brand.findOne({ brand: brand_name })
             res.json(brand)
         } catch (error) {
             console.log(error)

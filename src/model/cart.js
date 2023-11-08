@@ -5,10 +5,7 @@ const Schema = mongoose.Schema
 
 const Cart = new Schema({
     username: { type: String, require: true },
-    product_id: { type: String, required: true },
-    color_id: { type: String, required: true },
-    ram_id: { type: String},
-    rom_id: { type: String },
+    variations_id: { type: String, required: true },
     quantity: { type: Number, default: 1, required: true },
 }, {
     collection: "Cart"

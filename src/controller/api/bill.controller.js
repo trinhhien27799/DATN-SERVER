@@ -1,70 +1,17 @@
 
-const User = require('../../model/user')
+const Product = require('../../model/product')
 const Bill = require('../../model/bill')
 const Cart = require('../../model/cart')
 const Voucher = require('../../model/voucher')
 
 class ApiController {
     async createBill(req, res) {
-        const data = req.body
-        delete data.address._id
         try {
-            if (data.products.length == 0) {
-                throw "Danh sách sản phẩm không được để trống"
-            }
-            let total_price = 0
-            let list_id_cart = []
-            for (let i = 0; i < data.products.length; i++) {
-                let price_product = data.products[i].default_price
-                list_id_cart.push(data.products[i]._id)
-                delete data.products[i]._id
-                delete data.products[i].default_price
-                if (data.products[i].color_product) {
-                    price_product += data.products[i].color_product.increase_price
-                    data.products[i].image_product = data.products[i].color_product.image
-                    data.products[i].color_product = data.products[i].color_product.color
-                }
-                if (data.products[i].ram_product) {
-                    price_product += data.products[i].ram_product.increase_price
-                    data.products[i].ram_product = data.products[i].ram_product.size
-                }
-                if (data.products[i].rom_product) {
-                    price_product += data.products[i].rom_product.increase_price
-                    data.products[i].rom_product = data.products[i].rom_product.size
-                }
-                data.products[i].price_product = price_product * data.products[i].quantity
-                total_price += data.products[i].price_product
-            }
-
-            if (data.voucherId) {
-                const currentDate = new Date()
-                const voucher = await Voucher.findOne({
-                    _id: data.voucherId, username: data.username, used: false, expiration_date: { $gt: currentDate }
-                })
-                if (voucher.type == 0) { // giảm tiền vận chuyển
-                    if (voucher.discount_type == 0) {
-                        const fee = data.transport_fee < voucher.discount_value ? 0 : data.transport_fee - voucher.discount_value
-                        total_price+= fee
-                    }else{
-                        const fee = data.transport_fee * (100-voucher.discount_value)
-                        total_price+= fee
-                    }
-                }else{// giam tien hang
-                    total_price-= voucher.discount_value
-                }
-                voucher.used = false
-                await voucher.save()
-            }
-            data.total_price = total_price
-            const bill = await Bill.create(data)
-            if (!bill) {
-                throw "Đã xảy ra lỗi"
-            }
-            await Cart.deleteMany({ _id: list_id_cart })
-            res.json({ code: 200, message: "Đơn hàng của bạn đã tồn tại trên hệ thống" })
+            
+            res.json({ message: "Đơn hàng của bạn đã tồn tại trên hệ thống" })
         } catch (error) {
             console.log(error)
-            res.json({ code: 500, message: error })
+            res.json(error)
         }
     }
 

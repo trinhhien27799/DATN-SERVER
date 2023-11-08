@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 
 const Favorite = new Schema({
     username: { type: String, require: true },
-    list_id_product: [{ type: String }]
+    product_id: { type: String, require: true }
 }, {
     collection: "Favorite"
 })

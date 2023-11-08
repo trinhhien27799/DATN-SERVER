@@ -7,7 +7,7 @@ const Bill = new Schema({
     username: { type: String, require: true },
     address: { type: Object, require: true },
     products: [{
-        id_product: { type: String, required: true },
+        product_id: { type: String, required: true },
         product_name: { type: String, required: true },
         brand_name: { type: String, required: true },
         color: { type: String },
@@ -17,15 +17,15 @@ const Bill = new Schema({
         price: { type: Number, require: true },
         quantity: { type: Number, default: 1, required: true }
     }],
-    transport_fee: { type: Number, require: true, default: 0 },
-    shipping_method: { type: Number, require: true, default: 0 },
-    payment_method: { type: Number, require: true, default: 0 },
-    voucher: { type: Number },
-    total_price: { type: Number, require: true },
-    status: { type: Number, default: 0 },
+    transport_fee: { type: Number, require: true, default: 0 },//tiền vận chuyển
+    shipping_method: { type: Number, require: true, default: 0 },//phương thức vận chuyển
+    payment_method: { type: Number, require: true, default: 0 },//phương thức thanh toán
+    voucher: { type: Number },//giá trị voucher
+    total_price: { type: Number, require: true },//tổng tiền
+    status: { type: Number, default: 0 },//trạng thái đơn
     note: { type: String },
     time: { type: Date, default: Date.now },
-    cancel_order: { type: String }
+    cancel_order: { type: String }//lý do hủy đơn
 }, {
     collection: "Bill"
 })

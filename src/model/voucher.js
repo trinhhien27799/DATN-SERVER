@@ -5,7 +5,6 @@ const Schema = mongoose.Schema
 
 const Voucher = new Schema({
     username: { type: String, require: true },
-    code: { type: String, require: true, unique: true },
     description: { type: String, require: true },
     release_date: { type: Date, default: Date.now },
     expiration_date: { type: Date, require: true }, //ngày hết hạn

@@ -103,6 +103,20 @@ class ApiController {
         }
     }
 
+    async getBtBrand(req, res) {
+        const brand_name = req.params.name
+        try {
+            const products = await Product.find({ brand_name: brand_name }).sort({ time: -1 }).lean()
+            if (!products) {
+                throw "Không tìm thấy sản phẩm"
+            }
+            res.json(products)
+        } catch (error) {
+            console.log(error)
+            res.json(error)
+        }
+    }
+
 }
 
 

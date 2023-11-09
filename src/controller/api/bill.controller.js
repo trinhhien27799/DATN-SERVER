@@ -43,39 +43,15 @@ class ApiController {
 
             }))
 
-            // for (let item of data.list_cart) {
 
-            //     const variations_id = item.variations_id
-            //     const variations = await Variations.findById(variations_id)
-            //     if (!variations) {
-            //         throw "Không tìm thấy biến thể"
-            //     }
-            //     if (variations.quantity < 1) {
-            //         throw "Số lượng biến thể nhỏ hơn 1"
-            //     }
-            //     const product = await Product.findById(variations.productId)
-            //     if (!product) {
-            //         throw "Không tìm thấy sản phẩm"
-            //     }
-            //     data.product.push({
-            //         product_id: product._id,
-            //         product_name: product.product_name,
-            //         brand_name: product.brand_name,
-            //         color: variations.color,
-            //         image: variations.image,
-            //         ram: variations.ram,
-            //         rom: variations.rom,
-            //         price: variations.price,
-            //         quantity: item.quantity
-            //     })
-            //     total_price += item.quantity * variations.price * product.percent_discount
-            //     productsUpdate.push(product)
-            // }
             if (data.voucher_id != null) {
                 data.voucher = 0
                 const voucher = await Voucher.findOne({ _id: data.voucher_id, username: data.username, used: false, expiration_date: { $gte: new Date() } })
                 if (!voucher) {
                     throw "Voucher không hợp lệ"
+                }
+                if (voucher.condition > (total_price + data.transport_fee)) {
+                    throw "Voucher không phù hợp với hóa đơn này"
                 }
 
                 if (voucher.type == 0) {

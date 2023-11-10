@@ -122,12 +122,9 @@ class ApiController {
         const password = req.body.password
         console.log(username, password)
         try {
-            const user = await User.findOne({ username: username }).lean()
+            const user = await User.findOne({ username: username, enable: true,role:false }).lean()
             if (!user) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
-            }
-            if (user.role == true) {
-                throw "Tài khoản không có quyền truy cập"
             }
             const hashPassword = user.password
             const matches = await bcrypt.compare(password, hashPassword)
@@ -135,6 +132,9 @@ class ApiController {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }
             delete user.password
+            delete user.enable
+            delete user.role
+            delete user.__v
             if (!user.avatar) {
                 user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
             }
@@ -150,7 +150,7 @@ class ApiController {
         const token = req.body.token
         try {
             const account = await jwt.verify(token, SECRECT)
-            const user = await User.findOne({ username: account.username }).lean()
+            const user = await User.findOne({ username: account.username, role: false, enable: true }).lean()
             if (!user) {
                 return res.json({ code: 404, message: "Token không hợp lệ" })
             }
@@ -162,6 +162,9 @@ class ApiController {
                 user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
             }
             delete user.password
+            delete user.enable
+            delete user.role
+            delete user.__v
             console.log(user)
             res.json({ code: 200, message: "Đăng nhập thành công", user })
         } catch (error) {

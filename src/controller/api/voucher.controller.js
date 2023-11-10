@@ -4,7 +4,21 @@ const Voucher = require('../../model/voucher')
 
 
 class ApiController {
+
     async getAll(req, res) {
+        try {
+            const vouchers = await Voucher.find({ expiration_date: { $gte: new Date() } })
+            if (!vouchers) {
+                throw "Không tìm thấy voucher"
+            }
+            res.json(vouchers)
+        } catch (error) {
+            console.log(error)
+            res.json(error)
+        }
+    }
+    
+    async getAllByUser(req, res) {
         const username = req.body.username
         try {
             const voucherUser = await Voucher.find({ username: username })
@@ -12,7 +26,7 @@ class ApiController {
             if (!voucherUser) {
                 voucherUser.map((item) => listId.push(item._id))
             }
-            const vouchers = await Voucher.find({ _id: { $nin: listId }, expiration_date: { $gte: new Date() } })
+            const vouchers = await Voucher.find({ _id: { $nin: listId }, used: false, expiration_date: { $gte: new Date() } })
             if (!vouchers) {
                 throw "Không tìm thấy voucher"
             }

@@ -5,7 +5,7 @@ const Schema = mongoose.Schema
 
 const Voucher = new Schema({
     username: { type: String },
-    code: { type: String, require: true, unique: true },
+    code: { type: String, require: true},
     description: { type: String, require: true },
     release_date: { type: Date, default: Date.now },
     condition: { type: Number, default: 0, require: true },// Điều kiện sử dụng, giá trị hóa đơn bao gồm phí vận chuyển

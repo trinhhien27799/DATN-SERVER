@@ -20,6 +20,8 @@ var brandWeb = require('./web/brand.route');
 var bannerWeb = require('./web/banner.route');
 
 
+const vou = require('../model/voucher')
+
 function route(app) {
 
     //api
@@ -35,6 +37,7 @@ function route(app) {
     app.use('/api/voucher', voucherApi) // voucher
 
     //web
+
 
     app.get('/', (req, res) => {
         res.redirect('/user/login')

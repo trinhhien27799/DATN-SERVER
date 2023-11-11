@@ -1,15 +1,32 @@
-const express = require('express')
 require('dotenv').config()
+
+const express = require('express')
+const app = express()
+const server = require('http').createServer(app)
+
 
 const db = require('./src/config/db')
 const router = require('./src/route')
 
 
-const PORT = process.env.PORT
+const { PORT, SECRECT, URI_MONGODB } = process.env
+const { passport } = require('./src/utils/authModule')
+const MongoStore = require('connect-mongo')
+
+app.use(require('express-session')({
+    secret: SECRECT,
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: URI_MONGODB,
+        collectionName: 'Sessions',
+        
+    })
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 
-const app = express()
-const server = require('http').createServer(app)
 
 const { initializeSocket } = require('./src/config/socketManager')
 

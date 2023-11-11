@@ -1,11 +1,11 @@
-const Brand = require("../../model/brand");
+const Noti = require("../../model/notification");
 const { uploadImage, deleteImage } = require("../../utils/uploadImage");
 
 class Controller {
   async list(req, res) {
     try {
-      const data = await Brand.find();
-      res.render("brand/viewBrand", { layout: "layouts/main", data });
+      const data = await Noti.find();
+      res.render("notification/viewNoti", { layout: "layouts/main", data });
     } catch (error) {
       res.json(error);
     }
@@ -13,8 +13,8 @@ class Controller {
 
   async detail(req, res) {
     try {
-      const data = await Brand.findById({ _id: req.params.id });
-      res.render("brand/detailBrand", { layout: "layouts/main", data: data });
+      const data = await Noti.findById({ _id: req.params.id });
+      res.render("notification/detailNoti", { layout: "layouts/main", data });
     } catch (error) {
       res.json(error);
     }
@@ -32,7 +32,7 @@ class Controller {
           body.image = url;
         }
   
-        await Brand.create(body);
+        await Noti.create(body);
         return res.redirect("/brand");
       } catch (error) {
         console.log(error);
@@ -43,7 +43,7 @@ class Controller {
   }
 
   async edit(req, res) {
-    const data = await Brand.findById({ _id: req.params.id });
+    const data = await Noti.findById({ _id: req.params.id });
 
     res.render("brand/editBrand", {
       layout: "layouts/main",
@@ -62,7 +62,7 @@ class Controller {
       image = url;
     }
   
-    await Brand.findByIdAndUpdate(_id,{
+    await Noti.findByIdAndUpdate(_id,{
       brand: brand,
       description : description,
       image: image
@@ -74,7 +74,7 @@ class Controller {
   async delete(req, res) {
      const id = req.params.id;
 
-    await Brand.findByIdAndDelete(id)
+    await Noti.findByIdAndDelete(id)
       .then((brand) => {
         if (!brand) {
           throw "Brand not found!";

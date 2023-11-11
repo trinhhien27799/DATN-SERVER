@@ -8,10 +8,10 @@ const SECRECT = process.env.SECRECT
 async function checkUser(req, res, next) {
     const username = req.body.username
     const token = req.body.token
-    console.log(token,username)
+    console.log(token, username)
     try {
         const account = await jwt.verify(token, SECRECT)
-        if(!account){
+        if (!account) {
             throw "token không tồn tại"
         }
         if (account.username !== username) {
@@ -35,27 +35,10 @@ async function checkUser(req, res, next) {
 
 
 async function checkAdmin(req, res, next) {
-    const username = req.body.username
-    const token = req.body.token
-    try {
-        const account = await jwt.verify(token, SECRECT)
-        if (account.username !== username) {
-            throw ""
-        }
-        const user = await User.findOne({ username: username, role: true })
-        if (!user) {
-            throw ""
-        }
-        const matches = await bcrypt.compare(account.password, user.password)
-        if (!matches) {
-            throw ""
-        }
-        delete req.body.token
-        next()
-    } catch (error) {
-        console.log(error)
-        res.json({ code: 403, message: "Xác thực thất bại" })
+    if (req.isAuthenticated()) {
+        return next()
     }
+    res.redirect('/user/login')
 }
 
 module.exports = { checkUser, checkAdmin }

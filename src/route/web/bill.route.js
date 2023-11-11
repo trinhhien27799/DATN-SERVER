@@ -2,8 +2,10 @@ var express = require('express')
 var controller = require('../../controller/web/bill.controller')
 var router = express.Router()
 
-router.get('/', controller.list);
-router.get('/detail/:id', controller.detail);
+const { checkAdmin } = require('../../midleware/authentication')
+
+router.get('/', checkAdmin, controller.list);
+router.get('/detail/:id', checkAdmin, controller.detail);
 
 
 module.exports = router

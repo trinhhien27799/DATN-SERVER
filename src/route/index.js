@@ -18,6 +18,8 @@ var productWeb = require('./web/product.route');
 var billWeb = require('./web/bill.route');
 var brandWeb = require('./web/brand.route');
 var bannerWeb = require('./web/banner.route');
+var voucherWeb = require('./web/voucher.router');
+var notificationWeb = require('./web/notification.router');
 
 
 const vou = require('../model/voucher')
@@ -50,6 +52,8 @@ function route(app) {
     app.use('/bill', billWeb)
     app.use('/brand', brandWeb)
     app.use('/banner', bannerWeb)
+    app.use('/voucher', voucherWeb)
+    app.use('/notification', notificationWeb)
 
 }
 

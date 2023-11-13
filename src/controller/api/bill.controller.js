@@ -68,6 +68,7 @@ class ApiController {
                 }
                 total_price = total_price + data.transport_fee - data.voucher
                 delete data.voucher_id
+                await Voucher.deleteOne({_id:data.voucher_id})
             } else {
                 total_price += data.transport_fee
             }

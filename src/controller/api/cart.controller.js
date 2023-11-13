@@ -11,21 +11,16 @@ class ApiController {
             if (!carts) {
                 throw "Không lấy được danh sách giỏ hàng"
             }
-            for (let i = 0; i < carts.length; i++) {
-                const variations = await Variations.findById(carts[i].variations_id)
-                if (!variations) {
-                    delete carts[i]
-                    break
-                }
-                carts[i].price = variations.price
+            await Promise.all(carts.map(async (item) => {
+                const variations = await Variations.findById(item.variations_id)
+                item.price = variations.price
+                item.image = variations.image
                 const product = await Product.findById(variations.productId)
-                if(!product){
-                    delete carts[i]
-                    break
-                }
-                carts[i].product_name = product.product_name
-                carts[i].brand_name = product.brand_name
-            }
+                item.product_name = product.product_name
+                item.brand_name = product.brand_name
+                item.percent_discount = product.percent_discount
+            }))
+
             res.json(carts)
         } catch (error) {
             console.log(error)
@@ -37,11 +32,11 @@ class ApiController {
         const data = req.body
         try {
             const variations = await Variations.findById(data.variations_id)
-            if(!variations){
+            if (!variations) {
                 throw "Biến thể không tồn tại"
             }
-            const cart =await Cart.create(data)
-            if(!cart){
+            const cart = await Cart.create(data)
+            if (!cart) {
                 throw "Thêm giỏ hàng thất bại"
             }
             res.json(cart)
@@ -56,7 +51,7 @@ class ApiController {
         const username = req.body.username
         try {
             const del = await Cart.deleteMany({ username: username, _id: { $in: listIdCart } })
-            console.log("Đã xóa giỏ hàng: ",del.deletedCount)
+            console.log("Đã xóa giỏ hàng: ", del.deletedCount)
             res.json(del.deletedCount) //trả về số lượng bản ghi đã xóa 
         } catch (error) {
             console.log(error)
@@ -68,8 +63,8 @@ class ApiController {
         const cart_id = req.body.cart_id
         const quantity = req.body.quantity
         try {
-            const cart = await Cart.findOneAndUpdate({_id:cart_id},{$set:{quantity:quantity}})
-            if(!cart){
+            const cart = await Cart.findOneAndUpdate({ _id: cart_id }, { $set: { quantity: quantity } })
+            if (!cart) {
                 throw ""
             }
             res.json({ code: 200, message: "Cập nhật giỏ hàng thành công" })

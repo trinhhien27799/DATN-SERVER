@@ -12,8 +12,8 @@ class ApiController {
             let total_price = 0
             data.proudutcs = []
             var productsUpdate = []
-            var cartsDelete = []
-            await Promise.all(data.list_cart.map(async (item) => {
+            const listCart = await Cart.findById(data.listIdCart)
+            await Promise.all(listCart.map(async (item) => {
                 const variations_id = item.variations_id
                 const variations = await Variations.findById(variations_id)
                 if (!variations) {
@@ -39,8 +39,7 @@ class ApiController {
                     quantity: item.quantity
                 })
                 productsUpdate.push(product)
-                return total_price += item.quantity * variations.price * product.percent_discount
-
+                total_price += item.quantity * variations.price * product.percent_discount
             }))
 
 
@@ -72,7 +71,6 @@ class ApiController {
             } else {
                 total_price += data.transport_fee
             }
-            delete data.list_cart
             data.total_price = total_price
             const bill = await Bill.create(data)
             if (!bill) {
@@ -82,7 +80,8 @@ class ApiController {
             await Promise.all(productsUpdate.map(async (item) => {
                 return item.updateOne({ $set: { total_quantity: item.total_quantity - 1 } })
             }))
-            await Cart.deleteMany({ _id: { $in: cartsDelete } })
+            await Cart.deleteMany({ _id: { $in: data.listIdCart } })
+            delete data.listIdCart
             res.json({ message: "Đơn hàng của bạn đã tồn tại trên hệ thống" })
         } catch (error) {
             console.log(error)

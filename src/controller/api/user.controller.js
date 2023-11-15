@@ -12,7 +12,7 @@ const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 
 class ApiController {
     async insertOtp(req, res) {
-        const username = req.body.username
+        const username = req.body.username.toLowerCase()
         const forgotPassword = req.body.forgotPassword
         const type = (forgotPassword == true) ? 2 : 1
         try {
@@ -56,7 +56,7 @@ class ApiController {
     }
 
     async verifyOtp(req, res) {
-        const username = req.body.username
+        const username = req.body.username.toLowerCase()
         const otp = req.body.otp
         try {
             const otpHolder = await Otp.findOne({ username: username }).sort({ _id: -1 })
@@ -87,7 +87,7 @@ class ApiController {
     async createAccount(req, res) {
         const account = req.body
         try {
-            const username = account.username
+            const username = account.username.toLowerCase()
             const otp = await Otp.findOne({ username: username }).sort({ _id: -1 })
             if (!otp || otp.type != 1 || otp.confirm == false) {
                 throw "Yêu cầu xác nhận email"
@@ -118,11 +118,10 @@ class ApiController {
     }
 
     async login(req, res) {
-        const username = req.body.username
-        const password = req.body.password
+        const { username, password } = req.body
         console.log(username, password)
         try {
-            const user = await User.findOne({ username: username, enable: true,role:false }).lean()
+            const user = await User.findOne({ username: username.toLowerCase(), enable: true, role: false }).lean()
             if (!user) {
                 throw "Tài khoản hoặc mật khẩu không chính xác"
             }

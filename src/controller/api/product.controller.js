@@ -4,14 +4,26 @@ const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 const Brand = require('../../model/brand')
 const Variations = require('../../model/variations')
 const Description = require('../../model/description')
+const TypeProduct = require('../../model/typeProduct')
 
 class ApiController {
     async getAll(req, res) {
         try {
             const products = await Product.find({}).sort({ time: -1 }).lean()
+
             if (!products) {
                 throw "Không tìm thấy sản phẩm"
             }
+            await Promise.all(products.map(async (item) => {
+                const type_product = await TypeProduct.findById(item.product_type_id)
+                if (type_product) {
+                    item.product_type = type_product.name
+                }
+                const brand = await Brand.findById(item.brand_id)
+                if (brand) {
+                    item.brand_name = brand.brand
+                }
+            }))
             res.json(products)
         } catch (error) {
             console.log(error)

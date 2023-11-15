@@ -27,13 +27,13 @@
 <form action="/product/add" method="POST">
 
   <div class="row form-group mb-4">
+
     <div class="col">
-
-      <label for="product_type">Chọn loại sản phẩm:</label>
-      <select class="form-control" id="product_type" name="product_type">
-        <option value="Điện thoại">Điện thoại</option>
-        <option value="Phụ kiện">Phụ kiện</option>
-
+      <label for="product_type_id">Chọn loại sản phẩm:</label>
+      <select class="form-select"  id="product_type_id" name="product_type_id">
+        <% for(let i=0; i < type.length; i++) { %>
+          <option value="<%=type[i]._id%>"><%= type[i].name %></option>
+        <% } %>
       </select>
     </div>
   </div>
@@ -49,10 +49,10 @@
   <div class="row form-group mb-4">
 
     <div class="col">
-      <label for="brand_name">Chọn hãng sản phẩm:</label>
-      <select class="form-select"  id="brand_name" name="brand_name">
+      <label for="brand_id">Chọn hãng sản phẩm:</label>
+      <select class="form-select"  id="brand_id" name="brand_id">
         <% for(let i=0; i < brand.length; i++) { %>
-          <option><%= brand[i].brand %></option>
+          <option value="<%=brand[i]._id%>"><%= brand[i].brand %></option>
         <% } %>
       </select>
     </div>

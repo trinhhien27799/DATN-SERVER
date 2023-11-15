@@ -6,7 +6,7 @@ const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 class ApiController {
     async getAll(req, res) {
         try {
-            const type_product = await Type.find({}).sort({ name: 1 }).lean()
+            const type_product = await Type.find({})
             if (!type_product)
                 throw "Không tìm thấy loại sản phẩm"
             res.json(type_product)

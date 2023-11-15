@@ -5,13 +5,25 @@ const Description = require("../../model/description")
 const Banner = require("../../model/news")
 const Brand = require("../../model/brand")
 const { uploadImage, deleteImage } = require('../../utils/uploadImage')
-const brand = require("../../model/brand")
+const TypeProduct = require("../../model/typeProduct")
 
 
 class Controller {
   async pageHome(req, res) {
     try {
-      const array = await Product.find({});
+      const array = await Product.find({}).lean()
+      await Promise.all(array.map(async (item) => {
+        const type_product = await TypeProduct.findById(item.product_type_id)
+        if (type_product) {
+          item.product_type = type_product.name
+        }
+        const brand = await Brand.findById(item.brand_id)
+        if (brand) {
+          item.brand_name = brand.brand
+        }
+        delete item.product_type_id
+        delete item.brand_id
+      }))
       res.render("product/viewProduct.ejs", {
         layout: "layouts/main",
         data: array,
@@ -24,11 +36,21 @@ class Controller {
 
   async pageNewProduct(req, res) {
     try {
-      const arrBrand = await Brand.find({})
-      if (!brand) {
-        throw ""
-      }
-      res.render("product/newProduct.ejs", { layout: "./layouts/main", brand: arrBrand });
+      var arrBrand, typeProduct
+      await Promise.all([(async () => {
+        arrBrand = await Brand.find({})
+        if (!arrBrand) {
+          throw ""
+        }
+      })(), (async () => {
+        typeProduct = await TypeProduct.find({})
+        if (!typeProduct) {
+          throw ""
+        }
+      })()
+      ])
+
+      res.render("product/newProduct.ejs", { layout: "./layouts/main", brand: arrBrand, type: typeProduct });
     } catch (error) {
       console.log(error)
       res.json(error)
@@ -154,16 +176,44 @@ class Controller {
   async detailProduct(req, res) {
     const productId = req.params.id
     try {
-      const data = await Product.findById(productId)
-      res.render('product/detailProduct.ejs', { layout: './layouts/main', product: data })
+      var arrBrand, typeProduct, data
+      await Promise.all([(async () => {
+        arrBrand = await Brand.find({})
+        if (!arrBrand) {
+          throw "1"
+        }
+        console.log(arrBrand)
+      })(),
+      (async () => {
+        typeProduct = await TypeProduct.find({})
+        if (!typeProduct) {
+          throw "2"
+        }
+        console.log(typeProduct)
+      })(),
+      (async () => {
+        data = await Product.findById(productId)
+        if (!data) {
+          throw "3"
+        }
+        console.log(data)
+      })()
+      ])
+      res.render('product/detailProduct.ejs', { layout: './layouts/main', product: data, brand: arrBrand, type: typeProduct })
     } catch (error) {
       res.json(error)
     }
   }
 
-  pageNewVariations(req, res) {
-    const productId = req.params.id
-    res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId })
+  async pageNewVariations(req, res) {
+    try {
+      const productId = req.params.id
+      const product = await Product.findOne({ _id: productId, product_type_id: "6554f942866f4e5773778e10" })
+      const condition = (product != null)
+      res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId, condition: condition })
+    } catch (error) {
+      res.json(error)
+    }
   }
 
   async NewVariations(req, res) {

@@ -10,16 +10,16 @@ const bannerApi = require('./api/banner.route')
 const newsApi = require('./api/news.route')
 const notiApi = require('./api/notification.route')
 const voucherApi = require('./api/voucher.route')
-
+const brandApi = require('./api/brand.route')
 //route web
 
-var userWeb = require('./web/user.route');
-var productWeb = require('./web/product.route');
-var billWeb = require('./web/bill.route');
-var brandWeb = require('./web/brand.route');
-var bannerWeb = require('./web/banner.route');
-var voucherWeb = require('./web/voucher.router');
-var notificationWeb = require('./web/notification.router');
+var userWeb = require('./web/user.route')
+var productWeb = require('./web/product.route')
+var billWeb = require('./web/bill.route')
+var brandWeb = require('./web/brand.route')
+var bannerWeb = require('./web/banner.route')
+var voucherWeb = require('./web/voucher.router')
+var notificationWeb = require('./web/notification.router')
 
 
 const vou = require('../model/voucher')
@@ -37,7 +37,7 @@ function route(app) {
     app.use('/api/news', newsApi) // banner
     app.use('/api/notification', notiApi) // thông báo
     app.use('/api/voucher', voucherApi) // voucher
-
+    app.use('/api/brand', brandApi) // voucher
     //web
 
 

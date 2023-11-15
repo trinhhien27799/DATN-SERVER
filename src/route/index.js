@@ -11,6 +11,9 @@ const newsApi = require('./api/news.route')
 const notiApi = require('./api/notification.route')
 const voucherApi = require('./api/voucher.route')
 const brandApi = require('./api/brand.route')
+const typeApi = require('./api/type.route')
+
+
 //route web
 
 var userWeb = require('./web/user.route')
@@ -38,6 +41,7 @@ function route(app) {
     app.use('/api/notification', notiApi) // thông báo
     app.use('/api/voucher', voucherApi) // voucher
     app.use('/api/brand', brandApi) // voucher
+    app.use('/api/type-product', typeApi) // Loại sản phẩm
     //web
 
 

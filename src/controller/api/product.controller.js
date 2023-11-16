@@ -41,7 +41,7 @@ class ApiController {
             delete product.delete
             await Promise.all([
                 (async () => {
-                    const variations = await Variations.find({ productId: product_id, delete: false }).lean()
+                    const variations = await Variations.find({ productId: product_id, delete: false, quantity: { $gt: 0 } }).lean()
                     if (variations) {
                         variations.forEach((item) => {
                             delete item.productId

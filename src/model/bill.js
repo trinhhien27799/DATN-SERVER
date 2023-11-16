@@ -7,13 +7,7 @@ const Bill = new Schema({
     username: { type: String, require: true },
     address: { type: Object, require: true },
     products: [{
-        product_id: { type: String, required: true },
-        product_name: { type: String, required: true },
-        brand_name: { type: String, required: true },
-        color: { type: String },
-        image: { type: String, required: true },
-        ram: { type: String },
-        rom: { type: String },
+        variations_id: { type: String, required: true },
         price: { type: Number, require: true },
         quantity: { type: Number, default: 1, required: true }
     }],

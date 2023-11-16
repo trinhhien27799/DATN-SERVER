@@ -12,7 +12,10 @@ class ApiController {
             let total_price = 0
             data.proudutcs = []
             var productsUpdate = []
-            const listCart = await Cart.findById(data.listIdCart)
+            const listCart = await Cart.find({ _id: { $in: data.listIdCart } })
+            if (!listCart)
+                throw "Không tìm thấy sản phẩm"
+            data.product = []
             await Promise.all(listCart.map(async (item) => {
                 const variations_id = item.variations_id
                 const variations = await Variations.findById(variations_id)
@@ -22,19 +25,12 @@ class ApiController {
                 if (variations.quantity < 1) {
                     throw "Số lượng biến thể nhỏ hơn 1"
                 }
-                cartsDelete.push(item._id)
                 const product = await Product.findById(variations.productId)
                 if (!product) {
                     throw "Không tìm thấy sản phẩm"
                 }
                 data.product.push({
-                    product_id: product._id,
-                    product_name: product.product_name,
-                    brand_name: product.brand_name,
-                    color: variations.color,
-                    image: variations.image,
-                    ram: variations.ram,
-                    rom: variations.rom,
+                    variations_id: variations_id,
                     price: variations.price,
                     quantity: item.quantity
                 })
@@ -68,7 +64,7 @@ class ApiController {
                 }
                 total_price = total_price + data.transport_fee - data.voucher
                 delete data.voucher_id
-                await Voucher.deleteOne({_id:data.voucher_id})
+                await Voucher.deleteOne({ _id: data.voucher_id })
             } else {
                 total_price += data.transport_fee
             }
@@ -98,7 +94,7 @@ class ApiController {
             if (!bills) {
                 throw ""
             }
-            res.json({ code: 200, message: "Lấy dữ liệu thành công", bills })
+            res.json(bills)
         } catch (error) {
             console.log(error)
             res.json({ code: 500, message: "Đã xảy ra lỗi" })

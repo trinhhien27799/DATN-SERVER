@@ -10,11 +10,11 @@ class ApiController {
     async getAll(req, res) {
         try {
             const products = await Product.find({ delete: false }).sort({ time: -1 }).lean()
-
             if (!products) {
                 throw "Không tìm thấy sản phẩm"
             }
             await Promise.all(products.map(async (item) => {
+                delete item.delete
                 const type_product = await TypeProduct.findById(item.product_type_id)
                 if (type_product) {
                     item.product_type = type_product.name
@@ -38,6 +38,7 @@ class ApiController {
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
+            delete product.delete
             await Promise.all([
                 (async () => {
                     const variations = await Variations.find({ productId: product_id, delete: false }).lean()
@@ -45,6 +46,7 @@ class ApiController {
                         variations.forEach((item) => {
                             delete item.productId
                             delete item.__v
+                            delete item.delete
                         })
                         product.variations = variations
                     }

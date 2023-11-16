@@ -17,17 +17,17 @@ const shippingApi = require('./api/shipping.route')
 
 //route web
 
-var userWeb = require('./web/user.route')
-var productWeb = require('./web/product.route')
-var billWeb = require('./web/bill.route')
-var brandWeb = require('./web/brand.route')
-var bannerWeb = require('./web/banner.route')
-var voucherWeb = require('./web/voucher.router')
-var notificationWeb = require('./web/notification.router')
+const userWeb = require('./web/user.route')
+const productWeb = require('./web/product.route')
+const billWeb = require('./web/bill.route')
+const brandWeb = require('./web/brand.route')
+const bannerWeb = require('./web/banner.route')
+const voucherWeb = require('./web/voucher.router')
+const notificationWeb = require('./web/notification.router')
 
 
-const Product = require('../model/product')
-const Var = require('../model/variations')
+const { checkAdmin } = require('../midleware/authentication')
+
 
 
 function route(app) {
@@ -49,25 +49,7 @@ function route(app) {
     //web
 
 
-    app.get('/', async (req, res) => {
-        const product = await Product.find({})
-        const vari = await Var.find({})
-
-        await Promise.all([
-            (async () => {
-                product.map(async (i) => {
-                    i.delete = false
-                    return await i.save()
-                })
-            })(),
-            (async () => {
-                vari.map(async (i) => {
-                    i.delete = false
-                    return await i.save()
-                })
-            })()
-        ])
-
+    app.get('/', checkAdmin, (req, res) => {
         res.redirect('/user/login')
     })
 

@@ -13,6 +13,7 @@ class Controller {
     try {
       const array = await Product.find({ delete: false }).lean()
       await Promise.all(array.map(async (item) => {
+        delete item.delete
         const type_product = await TypeProduct.findById(item.product_type_id)
         if (type_product) {
           item.product_type = type_product.name
@@ -172,7 +173,8 @@ class Controller {
   async pageVariations(req, res) {
     const productId = req.params.id
     try {
-      const data = await Variations.find({ productId: productId }).sort({ _id: -1 })
+      const data = await Variations.find({ productId: productId, delete: false }).sort({ _id: -1 })
+      data.forEach(item => delete item.delete)
       res.render('product/variations.ejs', { layout: './layouts/main', data, productId: productId })
     } catch (error) {
       res.json(error)

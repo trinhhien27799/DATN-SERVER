@@ -60,12 +60,9 @@ class Controller {
 
   newProduct(req, res) {
     const body = req.body
-    console.log(body)
     Product.create(body)
       .then((rs) => {
-        console.log(rs)
         res.redirect('/product')
-
       })
       .catch((err) => res.json(err));
   }
@@ -98,10 +95,8 @@ class Controller {
   async updateProduct(req, res) {
     const body = req.body
     const id = req.params.id
-    console.log(id)
     try {
       const update = await Product.findOneAndUpdate({ _id: id }, { $set: body })
-      console.log(update)
       if (!update) {
         throw ""
       }
@@ -189,23 +184,20 @@ class Controller {
       await Promise.all([(async () => {
         arrBrand = await Brand.find({})
         if (!arrBrand) {
-          throw "1"
+          throw "Không tìm thấy thương hiệu"
         }
-        console.log(arrBrand)
       })(),
       (async () => {
         typeProduct = await TypeProduct.find({})
         if (!typeProduct) {
-          throw "2"
+          throw "Không tìm thấy phân loại"
         }
-        console.log(typeProduct)
       })(),
       (async () => {
         data = await Product.findOne({ _id: productId, delete: false })
         if (!data) {
-          throw "3"
+          throw "Không tìm thấy sản phẩm"
         }
-        console.log(data)
       })()
       ])
       res.render('product/detailProduct.ejs', { layout: './layouts/main', product: data, brand: arrBrand, type: typeProduct })

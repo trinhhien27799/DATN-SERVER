@@ -11,17 +11,21 @@ class ApiController {
             if (!carts) {
                 throw "Không lấy được danh sách giỏ hàng"
             }
+            var rs = []
             await Promise.all(carts.map(async (item) => {
                 const variations = await Variations.findById(item.variations_id)
+                if (!variations)
+                    return
                 item.price = variations.price
                 item.image = variations.image
                 const product = await Product.findById(variations.productId)
                 item.product_name = product.product_name
                 item.brand_name = product.brand_name
                 item.percent_discount = product.percent_discount
+                rs.push(item)
             }))
 
-            res.json(carts)
+            res.json(rs)
         } catch (error) {
             console.log(error)
             res.json(error)

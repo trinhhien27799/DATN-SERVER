@@ -13,13 +13,14 @@ const Bill = new Schema({
     }],
     transport_fee: { type: Number, require: true, default: 0 },//tiền vận chuyển
     shipping_method: { type: String, require: true },//phương thức vận chuyển
-    payment_method: { type: String, require: true},//phương thức thanh toán
+    payment_method: { type: String, require: true,default:"Thanh toán khi nhận hàng" },//phương thức thanh toán
     voucher: { type: Number },//giá trị voucher
     total_price: { type: Number, require: true },//tổng tiền
     status: { type: Number, default: 0 },//trạng thái đơn
     note: { type: String },
     time: { type: Date, default: Date.now },
-    cancel_order: { type: String }//lý do hủy đơn
+    cancel_order: { type: String },//lý do hủy đơn
+    delete: { type: Boolean, require: true, default: false }
 }, {
     collection: "Bill"
 })

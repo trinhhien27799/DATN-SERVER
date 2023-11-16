@@ -12,6 +12,7 @@ const notiApi = require('./api/notification.route')
 const voucherApi = require('./api/voucher.route')
 const brandApi = require('./api/brand.route')
 const typeApi = require('./api/type.route')
+const shippingApi = require('./api/shipping.route')
 
 
 //route web
@@ -25,7 +26,9 @@ var voucherWeb = require('./web/voucher.router')
 var notificationWeb = require('./web/notification.router')
 
 
-const vou = require('../model/voucher')
+const Product = require('../model/product')
+const Var = require('../model/variations')
+
 
 function route(app) {
 
@@ -42,10 +45,29 @@ function route(app) {
     app.use('/api/voucher', voucherApi) // voucher
     app.use('/api/brand', brandApi) // voucher
     app.use('/api/type-product', typeApi) // Loại sản phẩm
+    app.use('/api/shipping', shippingApi) // Loại vận chuyển
     //web
 
 
-    app.get('/', (req, res) => {
+    app.get('/', async (req, res) => {
+        const product = await Product.find({})
+        const vari = await Var.find({})
+
+        await Promise.all([
+            (async () => {
+                product.map(async (i) => {
+                    i.delete = false
+                    return await i.save()
+                })
+            })(),
+            (async () => {
+                vari.map(async (i) => {
+                    i.delete = false
+                    return await i.save()
+                })
+            })()
+        ])
+
         res.redirect('/user/login')
     })
 

@@ -11,7 +11,7 @@ const TypeProduct = require("../../model/typeProduct")
 class Controller {
   async pageHome(req, res) {
     try {
-      const array = await Product.find({}).lean()
+      const array = await Product.find({ delete: false }).lean()
       await Promise.all(array.map(async (item) => {
         const type_product = await TypeProduct.findById(item.product_type_id)
         if (type_product) {
@@ -74,11 +74,10 @@ class Controller {
   async deleteProduct(req, res) {
     const id = req.params.id
     try {
-      const product = await Product.findByIdAndDelete(id)
+      const product = await Product.findByIdAndUpdate(id, { $set: { delete: true } })
       if (!product) {
         throw "Product not found!";
       }
-      await Variations.deleteMany({ productId: id })
       console.log("Delete product successful")
       res.redirect('/product')
     } catch (error) {
@@ -192,7 +191,7 @@ class Controller {
         console.log(typeProduct)
       })(),
       (async () => {
-        data = await Product.findById(productId)
+        data = await Product.findOne({ _id: productId, delete: false })
         if (!data) {
           throw "3"
         }
@@ -208,8 +207,10 @@ class Controller {
   async pageNewVariations(req, res) {
     try {
       const productId = req.params.id
-      const product = await Product.findOne({ _id: productId, product_type_id: "6554f942866f4e5773778e10" })
-      const condition = (product != null)
+      const product = await Product.findOne({ _id: productId, delete: false })
+      if (!product)
+        throw "Không tìm thấy sản phẩm"
+      const condition = (product.product_type_id = "6554f942866f4e5773778e10")
       res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId, condition: condition })
     } catch (error) {
       res.json(error)
@@ -295,10 +296,8 @@ class Controller {
 
   async deleteVariations(req, res) {
     const id = req.params.id
-    const product_id = req.params.product_id
-    console.log(id)
     try {
-      const variation = await Variations.findByIdAndRemove(id)
+      const variation = await Variations.findByIdAndUpdate(id, { $set: { delete: true } })
       if (!variation) {
         throw "Variations not found!"
       }
@@ -311,4 +310,4 @@ class Controller {
   }
 }
 
-module.exports = new Controller();
+module.exports = new Controller()

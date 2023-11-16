@@ -13,12 +13,14 @@ class ApiController {
             }
             var rs = []
             await Promise.all(carts.map(async (item) => {
-                const variations = await Variations.findById(item.variations_id)
+                const variations = await Variations.findOne({ _id: item.variations_id, delete: false })
                 if (!variations)
+                    return
+                const product = await Product.findOne({ _id: variations.productId, delete: false })
+                if (!product)
                     return
                 item.price = variations.price
                 item.image = variations.image
-                const product = await Product.findById(variations.productId)
                 item.product_name = product.product_name
                 item.brand_name = product.brand_name
                 item.percent_discount = product.percent_discount
@@ -35,7 +37,7 @@ class ApiController {
     async add(req, res) {
         const data = req.body
         try {
-            const variations = await Variations.findById(data.variations_id)
+            const variations = await Variations.findOne({ _id: data.variations_id, delete: false })
             if (!variations) {
                 throw "Biến thể không tồn tại"
             }

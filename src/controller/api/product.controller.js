@@ -9,7 +9,7 @@ const TypeProduct = require('../../model/typeProduct')
 class ApiController {
     async getAll(req, res) {
         try {
-            const products = await Product.find({}).sort({ time: -1 }).lean()
+            const products = await Product.find({ delete: false }).sort({ time: -1 }).lean()
 
             if (!products) {
                 throw "Không tìm thấy sản phẩm"
@@ -34,31 +34,46 @@ class ApiController {
     async getItem(req, res) {
         const product_id = req.params.id
         try {
-            const product = await Product.findOne({ _id: product_id }).lean()
+            const product = await Product.findOne({ _id: product_id, delete: false }).lean()
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
-            const brand = await Brand.findOne({ brand: product.brand_name })
-            if (brand) {
-                product.brand_logo = brand.image
-            }
-            const variations = await Variations.find({ productId: product_id }).lean()
-            if (variations) {
-                variations.forEach((item) => {
-                    delete item.productId
-                    delete item.__v
-                })
-                product.variations = variations
-            }
-            const description = await Description.find({ id_follow: product_id }).lean()
-            if (description) {
-                description.forEach((item) => {
-                    delete item._id
-                    delete item.id_follow
-                    delete item.__v
-                })
-                product.description = description
-            }
+            await Promise.all([
+                (async () => {
+                    const variations = await Variations.find({ productId: product_id, delete: false }).lean()
+                    if (variations) {
+                        variations.forEach((item) => {
+                            delete item.productId
+                            delete item.__v
+                        })
+                        product.variations = variations
+                    }
+                })(),
+                (async () => {
+                    const type_product = await TypeProduct.findById(product.product_type_id)
+                    if (type_product) {
+                        product.product_type = type_product.name
+                    }
+                })(),
+                (async () => {
+                    const brand = await Brand.findById(product.brand_id)
+                    if (brand) {
+                        product.brand_name = brand.brand
+                        product.brand_logo = brand.image
+                    }
+                })(),
+                (async () => {
+                    const description = await Description.find({ id_follow: product_id }).lean()
+                    if (description) {
+                        description.forEach((item) => {
+                            delete item._id
+                            delete item.id_follow
+                            delete item.__v
+                        })
+                        product.description = description
+                    }
+                })(),
+            ])
             delete product.__v
             res.json(product)
         } catch (error) {
@@ -104,30 +119,6 @@ class ApiController {
         }
     }
 
-    async brand(req, res) {
-        const brand_name = req.params.name
-        try {
-            const brand = await Brand.findOne({ brand: brand_name })
-            res.json(brand)
-        } catch (error) {
-            console.log(error)
-            res.json(error)
-        }
-    }
-
-    async getBtBrand(req, res) {
-        const brand_name = req.params.name
-        try {
-            const products = await Product.find({ brand_name: brand_name }).sort({ time: -1 }).lean()
-            if (!products) {
-                throw "Không tìm thấy sản phẩm"
-            }
-            res.json(products)
-        } catch (error) {
-            console.log(error)
-            res.json(error)
-        }
-    }
 
 }
 

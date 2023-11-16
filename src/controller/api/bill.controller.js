@@ -5,12 +5,14 @@ const Cart = require('../../model/cart')
 const Voucher = require('../../model/voucher')
 const Variations = require('../../model/variations')
 const Address = require('../../model/address')
+const Shipping = require('../../model/shipping')
 class ApiController {
     async createBill(req, res) {
         try {
             var data = req.body
             const listCart = await Cart.find({ _id: { $in: data.listIdCart } })
-            if (!listCart)
+
+            if (!listCart || listCart.length == 0)
                 throw "Không tìm thấy sản phẩm"
             const address = await Address.findById(data.address).lean()
             if (!address)
@@ -20,9 +22,15 @@ class ApiController {
             delete address.time
             data.address = address
             let total_price = 0
+            const shipping = await Shipping.findById(data.shipping_id)
+            if (!shipping)
+                throw "Không tìm thấy phương thức vận chuyển"
+            delete data.shipping_id
+            data.shipping_method = shipping.name
+            data.transport_fee += shipping.price
             data.proudutcs = []
             var productsUpdate = []
-            data.product = []
+            data.products = []
             await Promise.all(listCart.map(async (item) => {
                 const variations_id = item.variations_id
                 const variations = await Variations.findById(variations_id)
@@ -36,7 +44,7 @@ class ApiController {
                 if (!product) {
                     throw "Không tìm thấy sản phẩm"
                 }
-                data.product.push({
+                data.products.push({
                     variations_id: variations_id,
                     price: variations.price,
                     quantity: item.quantity
@@ -93,14 +101,54 @@ class ApiController {
         }
     }
 
+    async detail(req, res) {
+        try {
+            const id = req.params.id
+            const bill = await Bill.findOne({ _id: id, delete: false }).lean()
+            if (!bill)
+                throw "Không tìm thấy hóa đơn"
+            await Promise.all(bill.products.map(async (i) => {
+                const variations = await Variations.findById(i.variations_id)
+                if (variations) {
+                    i.ram = variations.ram
+                    i.rom = variations.rom
+                    i.image = variations.image
+                    const product = await Product.findById(variations.productId)
+                    if (product) {
+                        i.product_name = product.product_name
+                    }
+                }
+            }))
+            res.json(bill)
+        } catch (error) {
+            console.log(error)
+            res.json({ code: 500, message: "Đã xảy ra lỗi" })
+        }
+    }
+
     async getAll(req, res) {
         const username = req.body.username
         const status = req.params.status
         try {
-            const bills = await Bill.find({ username: username, status: status })
+            const bills = await Bill.find({ username: username, status: status, delete: false }).lean()
             if (!bills) {
-                throw ""
+                throw "Không tìm thấy danh sách hóa đơn của bạn"
             }
+            await Promise.all(bills.map(async (item) => {
+                await Promise.all(item.products.map(async (i) => {
+                    const variations = await Variations.findById(i.variations_id)
+                    if (variations) {
+                        i.ram = variations.ram
+                        i.rom = variations.rom
+                        i.image = variations.image
+                        const product = await Product.findById(variations.productId)
+                        if (product) {
+                            i.product_name = product.product_name
+                        }
+                    }
+                }))
+            }))
+
             res.json(bills)
         } catch (error) {
             console.log(error)
@@ -109,14 +157,16 @@ class ApiController {
     }
 
     async cancelBill(req, res) {
-        const id_bill = req.body.id_bill
-        const username = req.body.username
-        const cancel_order = req.body.cancel_order
         try {
+            const id_bill = req.body.id_bill
+            const username = req.body.username
+            const cancel_order = req.body.cancel_order
             const bill = await Bill.findOne({ username: username, _id: id_bill })
             if (!bill) {
-                throw ""
+                throw "Không tìm thấy hóa đơn"
             }
+            if (bill.status != 0)
+                throw "Đơn hàng không thể hùy"
             bill.status = 4
             bill.cancel_order = cancel_order
             await bill.save()

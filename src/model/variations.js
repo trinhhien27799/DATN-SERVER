@@ -11,6 +11,7 @@ const Variations = new Schema({
     ram: { type: String },
     rom: { type: String },
     quantity: { type: Number, require: true, default: 0 },
+    delete: { type: Boolean, require: true, default: false }
 }, {
     collection: "Variations"
 });

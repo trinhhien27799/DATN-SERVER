@@ -30,18 +30,11 @@ class ApiController {
             if (!favorite) {
                 throw "Không tìm thấy bản ghi danh sách yêu thích"
             }
-            if (favorite.length == 0) {
-                return res.json([])
-            }
-            let list_id_product = []
-            for (let item of favorite) {
-                list_id_product.push(item.product_id)
-            }
-            let list_favorite = await Product.find({ _id: { $in: list_id_product } }).lean()
-
-            if (!list_favorite) {
-                throw "Đã xảy ra lỗi"
-            }
+            var list_favorite = []
+            await Promise.all(favorite.map(async (item) => {
+                let product = await Product.find({ _id: item.product_id, delete: false }).lean()
+                if (product) list_favorite.push(product)
+            }))
             res.json(list_favorite)
         } catch (error) {
             console.log(error)
@@ -69,10 +62,7 @@ class ApiController {
         const product_id = req.body.product_id
         try {
             const favorite = await Favorite.findOne({ username: username, product_id: product_id })
-            if (!favorite) {
-                res.json(false)
-            } else
-                res.json(true)
+            res.json(!(!favorite))
         } catch (error) {
             console.log(error)
             res.json(error)

@@ -72,12 +72,20 @@ class Controller {
 
 
   async deleteProduct(req, res) {
-    const id = req.params.id
     try {
-      const product = await Product.findByIdAndUpdate(id, { $set: { delete: true } })
-      if (!product) {
-        throw "Product not found!";
-      }
+      const id = req.params.id
+      await Promise.all([
+        (async () => {
+          const product = await Product.findByIdAndUpdate(id, { $set: { delete: true } })
+          if (!product) {
+            throw "Product not found!";
+          }
+        })(),
+        (async () => {
+          await Variations.findOneAndUpdate({ productId: id }, { $set: { delete: true } })
+        })(),
+      ])
+
       console.log("Delete product successful")
       res.redirect('/product')
     } catch (error) {

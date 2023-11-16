@@ -4,17 +4,24 @@ const Bill = require('../../model/bill')
 const Cart = require('../../model/cart')
 const Voucher = require('../../model/voucher')
 const Variations = require('../../model/variations')
-
+const Address = require('../../model/address')
 class ApiController {
     async createBill(req, res) {
         try {
             var data = req.body
-            let total_price = 0
-            data.proudutcs = []
-            var productsUpdate = []
             const listCart = await Cart.find({ _id: { $in: data.listIdCart } })
             if (!listCart)
                 throw "Không tìm thấy sản phẩm"
+            const address = await Address.findById(data.address).lean()
+            if (!address)
+                throw "Không tìm thấy địa chỉ"
+            delete address._id
+            delete address.__v
+            delete address.time
+            data.address = address
+            let total_price = 0
+            data.proudutcs = []
+            var productsUpdate = []
             data.product = []
             await Promise.all(listCart.map(async (item) => {
                 const variations_id = item.variations_id

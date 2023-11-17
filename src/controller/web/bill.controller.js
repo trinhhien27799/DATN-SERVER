@@ -2,7 +2,6 @@ const Bill = require("../../model/bill");
 
 require("dotenv").config;
 
-const SECRECT = process.env.SECRECT;
 
 class Controller {
   async list(req, res) {

@@ -127,20 +127,24 @@ class ApiController {
     }
 
     async getAll(req, res) {
-        const username = req.body.username
-        const status = req.params.status
+       
         try {
+            const username = req.body.username
+            const status = req.params.status
             const bills = await Bill.find({ username: username, status: status, delete: false }).lean()
             if (!bills) {
                 throw "Không tìm thấy danh sách hóa đơn của bạn"
             }
+            console.log(bills)
             await Promise.all(bills.map(async (item) => {
                 await Promise.all(item.products.map(async (i) => {
+                    console.log(i.variations_id)
                     const variations = await Variations.findById(i.variations_id)
                     if (variations) {
                         i.ram = variations.ram
                         i.rom = variations.rom
                         i.image = variations.image
+                        console.log(variations.productId)
                         const product = await Product.findById(variations.productId)
                         if (product) {
                             i.product_name = product.product_name

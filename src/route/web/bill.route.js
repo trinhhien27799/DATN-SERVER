@@ -6,6 +6,7 @@ const { checkAdmin } = require('../../midleware/authentication')
 
 router.get('/', checkAdmin, controller.list);
 router.get('/detail/:id', checkAdmin, controller.detail);
+router.get('/confirmBill/:id', controller.confirmBill);
 
 
 module.exports = router

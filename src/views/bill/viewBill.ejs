@@ -16,8 +16,9 @@
       <thead>
         <tr>
           <th scope="col">User name</th>
-          <th scope="col">Product number</th>
+          <th scope="col">Amount product</th>
           <th scope="col">Total price</th>
+          <th scope="col">Status</th>
           <th scope="col">Created at</th>
           <th scope="col" class="text-end">Action</th>
         </tr>
@@ -29,20 +30,27 @@
             <td><%= bill.username %></td>
             <td><%= bill.products.length %></td>
             <td><%= bill.total_price %></td>
+            <td><%= bill.statusText %></td>
             <td><%= bill.time.toLocaleString('en') %></td>
             <td class="text-end">
   
               <div class="d-flex flex-row justify-content-end gap-2">
 
+                <% if (bill?.status != undefined) { %> 
+                  <% if (bill?.status == 0) { %>
+                    <a href="/bill/confirmBill/<%= bill._id %>" class="btn btn-success btn-small" style="border-radius: 5px; padding-right: 12px;">
+                      <i class="bi">Confirm bill</i>
+                    </a>
+                  <% } else if (bill?.status == 1) { %>
+                    <a href="/bill/confirmBill/<%= bill._id %>" class="btn btn-success btn-small" style="border-radius: 5px; padding-right: 12px;">
+                      <i class="bi">Confirm delivery</i>
+                    </a>
+                <% }} %>
              
                 <a href="/bill/detail/<%= bill._id %>" type="button" class="btn btn-primary btn-small">
                   <i class="bi bi-eye"></i>
                 </a>
   
-                <a href="/product/edit/<%= bill._id %>" type="button" class="btn btn-warning btn-small">
-                  <i class="bi bi-pencil"></i>
-                </a>
-              
                <div>
                     <button type="button" class="btn btn-danger btn-small" data-bs-toggle="modal"
                     data-bs-target="#deleteModal" data-bs-id="<%=bill._id%>"> <i class="bi bi-trash"></i></button>

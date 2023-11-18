@@ -14,15 +14,26 @@ class ApiController {
                 throw "Không tìm thấy sản phẩm"
             }
             await Promise.all(products.map(async (item) => {
-                delete item.delete
-                const type_product = await TypeProduct.findById(item.product_type_id)
-                if (type_product) {
-                    item.product_type = type_product.name
-                }
-                const brand = await Brand.findById(item.brand_id)
-                if (brand) {
-                    item.brand_name = brand.brand
-                }
+                await Promise.all([
+                    (async () => {
+                        const type_product = await TypeProduct.findById(item.product_type_id)
+                        if (type_product) {
+                            item.product_type = type_product.name
+                        }
+                    })(),
+                    (async () => {
+                        if (!item.brand_id) {
+                            return
+                        }
+                        const brand = await Brand.findById(item.brand_id)
+                        if (brand) {
+                            item.brand_name = brand.brand
+                        }
+                    })(),
+                    (() => {
+                        delete item.delete
+                    })()
+                ])
             }))
             res.json(products)
         } catch (error) {
@@ -58,6 +69,9 @@ class ApiController {
                     }
                 })(),
                 (async () => {
+                    if (!item.brand_id) {
+                        return
+                    }
                     const brand = await Brand.findById(product.brand_id)
                     if (brand) {
                         product.brand_name = brand.brand

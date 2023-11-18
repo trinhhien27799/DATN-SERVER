@@ -10,7 +10,7 @@ const Product = new Schema(
     vote: { type: Number, default: 0 },
     sold: { type: Number, default: 0 },
     time: { type: Date, default: Date.now },
-    product_type_id: { type: String, require: true },
+    product_type_id: { type: String },
     min_price: { type: Number },
     max_price: { type: Number },
     total_quantity: { type: Number, require: true, default: 0 },

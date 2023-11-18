@@ -19,11 +19,25 @@ class ApiController {
                 const product = await Product.findOne({ _id: variations.productId, delete: false })
                 if (!product)
                     return
-                item.price = variations.price
-                item.image = variations.image
-                item.product_name = product.product_name
-                item.brand_name = product.brand_name
-                item.percent_discount = product.percent_discount
+                await Promise.all([
+                    (async () => {
+                        if (!item.brand_id) {
+                            return
+                        }
+                        const brand = await Brand.findById(product.brand_id)
+                        if (brand) {
+                            item.brand_name = brand.brand
+                            item.brand_logo = brand.image
+                        }
+                    })(),
+                    (() => {
+                        item.price = variations.price
+                        item.image = variations.image
+                        item.product_name = product.product_name
+                        item.percent_discount = product.percent_discount
+                    })()
+                ])
+
                 rs.push(item)
             }))
 

@@ -1,7 +1,10 @@
 
 const Favorite = require('../../model/favorite')
 const Product = require('../../model/product')
-
+const Brand = require('../../model/brand')
+const Variations = require('../../model/variations')
+const Description = require('../../model/description')
+const TypeProduct = require('../../model/typeProduct')
 
 class ApiController {
     async add(req, res) {
@@ -33,6 +36,46 @@ class ApiController {
             var list_favorite = []
             await Promise.all(favorite.map(async (item) => {
                 let product = await Product.find({ _id: item.product_id, delete: false }).lean()
+                await Promise.all([
+                    (async () => {
+                        const variations = await Variations.find({ productId: product._id, delete: false, quantity: { $gt: 0 } }).lean()
+                        if (variations) {
+                            variations.forEach((item) => {
+                                delete item.productId
+                                delete item.__v
+                                delete item.delete
+                            })
+                            product.variations = variations
+                        }
+                    })(),
+                    (async () => {
+                        const type_product = await TypeProduct.findById(product.product_type_id)
+                        if (type_product) {
+                            product.product_type = type_product.name
+                        }
+                    })(),
+                    (async () => {
+                        if (!item.brand_id) {
+                            return
+                        }
+                        const brand = await Brand.findById(product.brand_id)
+                        if (brand) {
+                            product.brand_name = brand.brand
+                            product.brand_logo = brand.image
+                        }
+                    })(),
+                    (async () => {
+                        const description = await Description.find({ id_follow: product_id }).lean()
+                        if (description) {
+                            description.forEach((item) => {
+                                delete item._id
+                                delete item.id_follow
+                                delete item.__v
+                            })
+                            product.description = description
+                        }
+                    })(),
+                ])
                 if (product) list_favorite.push(product)
             }))
             res.json(list_favorite)

@@ -14,16 +14,20 @@ class Controller {
       const array = await Product.find({ delete: false }).lean()
       await Promise.all(array.map(async (item) => {
         delete item.delete
+
         const type_product = await TypeProduct.findById(item.product_type_id)
         if (type_product) {
           item.product_type = type_product.name
         }
-        const brand = await Brand.findById(item.brand_id)
-        if (brand) {
-          item.brand_name = brand.brand
+        if (!item.product_type_id) {
+          const brand = await Brand.findById(item.brand_id)
+          if (brand) {
+            item.brand_name = brand.brand
+          }
+          delete item.brand_id
         }
         delete item.product_type_id
-        delete item.brand_id
+        
       }))
       res.render("product/viewProduct.ejs", {
         layout: "layouts/main",
@@ -212,7 +216,7 @@ class Controller {
       const product = await Product.findOne({ _id: productId, delete: false })
       if (!product)
         throw "Không tìm thấy sản phẩm"
-      const condition = (product.product_type_id = "6554f942866f4e5773778e10")
+      const condition = (product.product_type_id == "6554f942866f4e5773778e10")
       res.render('product/newVariations.ejs', { layout: './layouts/main', productId: productId, condition: condition })
     } catch (error) {
       res.json(error)

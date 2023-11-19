@@ -7,13 +7,12 @@ const SECRECT = process.env.SECRECT
 
 async function checkUser(req, res, next) {
     const token = req.body.token
-    console.log(token, username)
     try {
         const account = await jwt.verify(token, SECRECT)
         if (!account) {
             throw "token không tồn tại"
         }
-        const user = await User.findOne({ username: username, role: false, enable: true })
+        const user = await User.findOne({ username: account.username, password: account.password, role: false, enable: true })
         if (!user) {
             throw "không tìm thấy người dùng"
         }

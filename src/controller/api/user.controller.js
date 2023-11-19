@@ -137,7 +137,7 @@ class ApiController {
             if (!user.avatar) {
                 user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
             }
-            const token = await jwt.sign({ username: username, password: password, role: user.role }, SECRECT)
+            const token = await jwt.sign({ username: username, password: password }, SECRECT)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
@@ -149,7 +149,7 @@ class ApiController {
         const token = req.body.token
         try {
             const account = await jwt.verify(token, SECRECT)
-            const user = await User.findOne({ username: account.username, role: false, enable: true }).lean()
+            const user = await User.findOne({ username: account.username, password: account.password, role: false, enable: true }).lean()
             if (!user) {
                 return res.json({ code: 404, message: "Token không hợp lệ" })
             }

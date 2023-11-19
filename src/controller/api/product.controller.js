@@ -69,7 +69,7 @@ class ApiController {
                     }
                 })(),
                 (async () => {
-                    if (!item.brand_id) {
+                    if (!product.brand_id) {
                         return
                     }
                     const brand = await Brand.findById(product.brand_id)

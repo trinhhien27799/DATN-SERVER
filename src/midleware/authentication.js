@@ -6,7 +6,6 @@ const bcrypt = require('bcrypt')
 const SECRECT = process.env.SECRECT
 
 async function checkUser(req, res, next) {
-    const username = req.body.username
     const token = req.body.token
     console.log(token, username)
     try {
@@ -14,18 +13,12 @@ async function checkUser(req, res, next) {
         if (!account) {
             throw "token không tồn tại"
         }
-        if (account.username !== username) {
-            throw "token không hợp lệ"
-        }
-        const user = await User.findOne({ username: username, role: false })
+        const user = await User.findOne({ username: username, role: false, enable: true })
         if (!user) {
             throw "không tìm thấy người dùng"
         }
-        const matches = await bcrypt.compare(account.password, user.password)
-        if (!matches) {
-            throw "token hết hạn"
-        }
         delete req.body.token
+        req.body.username = account.username
         next()
     } catch (error) {
         console.log(error)

@@ -1,11 +1,10 @@
 require('dotenv').config()
 const Product = require('../../model/product')
-const { uploadImage, deleteImage } = require('../../utils/uploadImage')
 const Brand = require('../../model/brand')
 const Variations = require('../../model/variations')
 const Description = require('../../model/description')
 const TypeProduct = require('../../model/typeProduct')
-
+const Favorite = require('../../model/favorite')
 class ApiController {
     async getAll(req, res) {
         try {
@@ -76,6 +75,13 @@ class ApiController {
                     if (brand) {
                         product.brand_name = brand.brand
                         product.brand_logo = brand.image
+                    }
+                })(),
+                (async () => {
+                    const username = req.body.username
+                    if (username) {
+                        const favorite = await Favorite.findOne({ username: username, product_id: product_id })
+                        product.like = !!favorite
                     }
                 })(),
                 (async () => {

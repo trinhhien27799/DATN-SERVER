@@ -13,7 +13,7 @@ const voucherApi = require('./api/voucher.route')
 const brandApi = require('./api/brand.route')
 const typeApi = require('./api/type.route')
 const shippingApi = require('./api/shipping.route')
-
+const commentApi = require('./api/comment.route')
 
 //route web
 
@@ -46,6 +46,10 @@ function route(app) {
     app.use('/api/brand', brandApi) // voucher
     app.use('/api/type-product', typeApi) // Loại sản phẩm
     app.use('/api/shipping', shippingApi) // Loại vận chuyển
+    app.use('/api/comment', commentApi)
+
+
+
     //web
 
 

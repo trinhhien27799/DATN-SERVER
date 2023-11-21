@@ -49,21 +49,22 @@ class Controller {
     try {
       const id = req.params.id;
       const bill = await Bill.findById(id);
-      console.log(bill)
       if (!bill) throw "Không tìm thấy hóa đơn"
       bill.status += 1;
       await bill.save();
       res.redirect('/bill');
-      await Promise.all(bill.products.map(async (item) => {
-        const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
-        if (cacheCheck) {
-          await cacheCheck.deleteOne()
-          await Cache.create(cacheCheck)
-        } else {
-          const variations = await Variations.findById(item.variations_id)
-          await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
-        }
-      }))
+      if (bill.status == 2) {
+        await Promise.all(bill.products.map(async (item) => {
+          const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
+          if (cacheCheck) {
+            await cacheCheck.deleteOne()
+            await Cache.create({ username: cacheCheck.username, varitationId: cacheCheck.varitationId, productId: cacheCheck.productId })
+          } else {
+            const variations = await Variations.findById(item.variations_id)
+            await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
+          }
+        }))
+      }
     } catch (error) {
       res.json(error);
     }

@@ -33,9 +33,10 @@ class ApiController {
             if (!favorite) {
                 throw "Không tìm thấy bản ghi danh sách yêu thích"
             }
+            if (favorite.length == 0) return res.json([])
             var list_favorite = []
             await Promise.all(favorite.map(async (item) => {
-                let product = await Product.find({ _id: item.product_id, delete: false }).lean()
+                var product = await Product.find({ _id: item.product_id, delete: false }).lean()
                 await Promise.all([
                     (async () => {
                         const variations = await Variations.find({ productId: product._id, delete: false, quantity: { $gt: 0 } }).lean()
@@ -65,7 +66,7 @@ class ApiController {
                         }
                     })(),
                     (async () => {
-                        const description = await Description.find({ id_follow: product_id }).lean()
+                        const description = await Description.find({ id_follow: item.product_id }).lean()
                         if (description) {
                             description.forEach((item) => {
                                 delete item._id

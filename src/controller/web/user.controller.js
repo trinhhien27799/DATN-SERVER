@@ -1,4 +1,6 @@
 const User = require("../../model/user");
+const Product = require("../../model/product");
+const Bill = require("../../model/bill");
 const Otp = require("../../model/otp");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -202,6 +204,140 @@ class Controller {
         res.json(err);
       });
   }
+
+  async dashboard(req, res) {
+    try {
+      let listProduct = await Product
+        .find()
+        .sort({ sold: -1 })
+        .limit(5);
+      const months = [];
+      const totalBills = [];
+      const totalBillsProduct = [];
+      const totalInterests = [];
+      const totalCustomers = [];
+      const endDate = new Date();
+      const last6Month = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - 5,
+        1
+      );
+      let currentDate = new Date(last6Month);
+  
+      while (currentDate <= endDate) {
+        let previusDate = currentDate.toISOString();
+        let nowDate = new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth() + 1,
+          1
+        ).toISOString();
+        let date = currentDate.toLocaleString("en", {
+          month: "long",
+          year: "numeric",
+        });
+        months.push(date.substring(0, 1).toLocaleUpperCase() + date.substring(1));
+        currentDate.setMonth(currentDate.getMonth() + 1);
+  
+        let total = await getTotalBill(previusDate, nowDate);
+        let product = await getTotalProduct(previusDate, nowDate);
+        let client = await getTotalCustomer(previusDate, nowDate);
+        totalBills.push(total);
+        totalBillsProduct.push(0 - product);
+        totalInterests.push(total - product);
+        totalCustomers.push(client);
+      }
+    
+
+      res.render("dashBoard/dashboard", {
+        layout: "layouts/main",
+        title: "Dashboard",
+        listProduct: JSON.stringify(listProduct),
+        months: JSON.stringify(months),
+        totalBills: JSON.stringify(totalBills),
+        totalBillsProduct: JSON.stringify(totalBillsProduct),
+        totalInterests: JSON.stringify(totalInterests),
+        totalCustomers: JSON.stringify(totalCustomers),
+
+      });
+    } catch (error) {
+      console.log(error);
+      res.send(error);
+    }
+   }
 }
+
+async function getTotalBill(previusDate, nowDate) {
+  var match_stage = {
+    $match: {
+      time: {
+        $gte: new Date(previusDate),
+        $lte: new Date(nowDate),
+      },
+      status: {
+        $gte: 2
+      }
+    },
+  };
+  var group_stage = {
+    $group: { _id: null, sum: { $sum: "$total_price" } },
+  };
+  var project_stage = {
+    $project: { _id: 0, total: "$sum" },
+  };
+
+ 
+  var pipeline = [match_stage, group_stage, project_stage];
+  let sumTotal = await Bill.aggregate(pipeline);
+  if (sumTotal[0] != undefined) {
+    return sumTotal[0].total;
+  } else {
+    return 0;
+  }
+}
+
+async function getTotalProduct(previusDate, nowDate) {
+  var match_stage = {
+    $match: {
+      time: {
+        $gte: new Date(previusDate),
+        $lte: new Date(nowDate),
+      },
+      status: {
+        $gte: 2
+      }
+    },
+  };
+  var group_stage = {
+    $group: { _id: null, sum: { $sum: "$import_total" } },
+  };
+  var project_stage = {
+    $project: { _id: 0, total: "$sum" },
+  };
+
+  var pipeline = [match_stage, group_stage, project_stage];
+  let sumTotal = await Bill.aggregate(pipeline);
+  if (sumTotal[0] != undefined) {
+    return sumTotal[0].total;
+  } else {
+    return 0;
+  }
+}
+
+async function getTotalCustomer(previusDate, nowDate) {
+  let listClient = await User.find({
+    time: {
+      $gte: previusDate,
+      $lte: nowDate,
+    }
+  });
+  if (listClient) {
+    return listClient.length;
+  } else {
+    return 0;
+  }
+}
+
+
+
 
 module.exports = new Controller();

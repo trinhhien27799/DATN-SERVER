@@ -65,7 +65,7 @@ class ApiController {
                         }
                     })(),
                     (async () => {
-                        const description = await Description.find({ id_follow: product_id }).lean()
+                        const description = await Description.find({ id_follow: product._id }).lean()
                         if (description) {
                             description.forEach((item) => {
                                 delete item._id

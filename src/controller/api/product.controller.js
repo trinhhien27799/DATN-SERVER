@@ -42,8 +42,9 @@ class ApiController {
 
     }
     async getItem(req, res) {
-        const product_id = req.params.id
         try {
+            const product_id = req.params.id
+            console.log(product_id)
             const product = await Product.findOne({ _id: product_id, delete: false }).lean()
             if (!product) {
                 throw "Không tìm thấy sản phẩm"

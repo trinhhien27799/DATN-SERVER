@@ -1,4 +1,5 @@
 const Bill = require("../../model/bill");
+const { login } = require("./user.controller");
 
 require("dotenv").config;
 
@@ -6,7 +7,11 @@ require("dotenv").config;
 class Controller {
   async list(req, res) {
     try {
-      const array = await Bill.find();
+    
+      const array = await Bill.find({status: req.query.status});
+
+      const amount = await Bill.find({status: 0});
+      const amount2 = await Bill.find({status: 1});
 
       for (let i = 0; i < array.length; i++) {
 
@@ -21,15 +26,12 @@ class Controller {
             case 2:
               array[i].statusText = "Delivered"
               break;
-            case 3:
-              array[i].statusText = "Received"
-              break;
             default:
               break;
           }
         }
       }
-      res.render("bill/viewBill", { layout: "layouts/main", data: array });
+      res.render("bill/viewBill", { layout: "layouts/main", data: array, amount, amount2 });
     } catch (error) {
       res.json(error);
     }

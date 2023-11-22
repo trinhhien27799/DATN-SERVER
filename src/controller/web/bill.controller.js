@@ -1,13 +1,11 @@
 const Bill = require("../../model/bill");
-const { login } = require("./user.controller");
-
-require("dotenv").config;
+const Cache = require('../../model/Cache');
+const Variations = require("../../model/variations");
 
 
 class Controller {
   async list(req, res) {
     try {
-    
       const array = await Bill.find({status: req.query.status});
 
       const amount = await Bill.find({status: 0});
@@ -45,21 +43,36 @@ class Controller {
       res.json(error);
     }
   }
-  async confirmBill(req, res){
+
+  async confirmBill(req, res) {
     try {
       const id = req.params.id;
       const bill = await Bill.findById(id);
-      
       if (bill && bill.status == 0) {
         bill.status = 1;
-        await Bill.findByIdAndUpdate(id, bill);
       }else if (bill && bill.status == 1) {
         bill.status = 2;
-        await Bill.findByIdAndUpdate(id, bill);
       }
-
+      await bill.save();
       res.redirect('/bill');
+      await Promise.all(bill.products.map(async (item) => {
+        const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
+        // if (cacheCheck) {
+        //   await cacheCheck.deleteOne()
+        //   await Cache.create(cacheCheck)
+        // } else {
+        //   const variations = await Variations.findById(item.variations_id)
+        //   await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
+        // }
+
+        if (!cacheCheck) {
+          const variations = await Variations.findById(item.variations_id)
+          await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
+        }
+      }))
+
     } catch (error) {
+      console.log(error);
       res.json(error);
     }
   }

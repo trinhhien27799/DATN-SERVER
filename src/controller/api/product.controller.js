@@ -42,12 +42,12 @@ class ApiController {
     async getItem(req, res) {
         try {
             const product_id = req.params.id
-            console.log(product_id)
             const product = await Product.findOne({ _id: product_id, delete: false }).lean()
             if (!product) {
                 throw "Không tìm thấy sản phẩm"
             }
             delete product.delete
+            product.total_quantity = 0
             await Promise.all([
                 (async () => {
                     const variations = await Variations.find({ productId: product_id, delete: false, quantity: { $gt: 0 } }).lean()
@@ -56,6 +56,7 @@ class ApiController {
                             delete item.productId
                             delete item.__v
                             delete item.delete
+                            product.total_quantity += item.quantity
                         })
                         product.variations = variations
                     }

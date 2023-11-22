@@ -5,9 +5,9 @@ const Cart = require('../../model/cart')
 
 class ApiController {
     async getAll(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         try {
-            const carts = await Cart.find({ username: username }).lean()
+            const carts = await Cart.find({ userId: userId }).lean()
             if (!carts) {
                 throw "Không lấy được danh sách giỏ hàng"
             }
@@ -68,9 +68,9 @@ class ApiController {
 
     async delete(req, res) {
         const listIdCart = req.body.listIdCart
-        const username = req.body.username
+        const userId = req.body.userId
         try {
-            const del = await Cart.deleteMany({ username: username, _id: { $in: listIdCart } })
+            const del = await Cart.deleteMany({ userId: userId, _id: { $in: listIdCart } })
             console.log("Đã xóa giỏ hàng: ", del.deletedCount)
             res.json(del.deletedCount) //trả về số lượng bản ghi đã xóa 
         } catch (error) {

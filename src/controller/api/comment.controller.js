@@ -14,7 +14,7 @@ class ApiController {
             await Promise.all(comments.map(async (item) => {
                 await Promise.all([
                     (async () => {
-                        const user = await User.findOne({ username: item.username })
+                        const user = await User.findOne({ userId: item.userId })
                         if (user) {
                             item.author = {}
                             item.author.fullname = user.fullname
@@ -50,7 +50,7 @@ class ApiController {
     async add(req, res) {
         try {
             const data = req.body
-            const cache = await Cache.findOne({ username: data.username, productId: data.productId, varitationId: data.varitationId })
+            const cache = await Cache.findOne({ userId: data.userId, productId: data.productId, varitationId: data.varitationId })
             if (!cache) throw "Đã hết thời gian đánh giá sản phẩm"
             const uploadedFiles = req.files
             if (uploadedFiles != null && uploadedFiles.length > 0) {
@@ -75,7 +75,7 @@ class ApiController {
     async check(req, res) {
         try {
             const data = req.body
-            const cache = await Cache.find({ username: data.username, productId: data.productId })
+            const cache = await Cache.find({ userId: data.userId, productId: data.productId })
             if (!cache || cache.length == 0) return res.json([])
             const listVariationId = []
             cache.forEach((item) => listVariationId.push(item.varitationId))

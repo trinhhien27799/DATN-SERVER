@@ -13,7 +13,6 @@ const Product = new Schema(
     product_type_id: { type: String },
     min_price: { type: Number },
     max_price: { type: Number },
-    total_quantity: { type: Number, require: true, default: 0 },
     percent_discount: { type: Number, default: 0 },
     delete: { type: Boolean, require: true, default: false }
   }, {

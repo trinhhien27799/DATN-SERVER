@@ -137,7 +137,7 @@ class ApiController {
             if (!user.avatar) {
                 user.avatar = "https://firebasestorage.googleapis.com/v0/b/shopping-6b085.appspot.com/o/user%2Fuser.png?alt=media&token=794ad4dc-302b-4708-b102-ccbaf80ea567&_gl=1*e1jpw6*_ga*NDE5OTAxOTY1LjE2OTUwMDQ5MjM.*_ga_CW55HF8NVT*MTY5NzExMzA0MS4yMS4xLjE2OTcxMTMzMjcuNTkuMC4w"
             }
-            const token = await jwt.sign({ username: username, password: password }, SECRECT)
+            const token = await jwt.sign({ userId: user._id, password: password }, SECRECT)
             res.json({ code: 200, message: "Đăng nhập thành công", user, token: token })
         } catch (error) {
             console.log(error)
@@ -325,10 +325,8 @@ class ApiController {
             const hashPass = await bcrypt.hash(newPass, salt)
             user.password = hashPass
             await user.save()
-            const token = await jwt.sign({ username: username, password: newPass, role: user.role }, SECRECT)
-            if (!token) {
-                throw "Tạo token mới thất bại"
-            }
+            const token = await jwt.sign({ userId: user._id, password: newPass, role: user.role }, SECRECT)
+            if (!token) throw "Tạo token mới thất bại"
             res.json({ token: token })
         } catch (error) {
             console.log(error)

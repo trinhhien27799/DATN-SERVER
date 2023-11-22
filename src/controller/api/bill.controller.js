@@ -105,8 +105,7 @@ class ApiController {
         try {
             const id = req.params.id
             const bill = await Bill.findOne({ _id: id, delete: false }).lean()
-            if (!bill)
-                throw "Không tìm thấy hóa đơn"
+            if (!bill) throw "Không tìm thấy hóa đơn"
             await Promise.all(bill.products.map(async (i) => {
                 const variations = await Variations.findById(i.variations_id)
                 if (variations) {
@@ -127,7 +126,7 @@ class ApiController {
     }
 
     async getByStatus(req, res) {
-       
+
         try {
             const username = req.body.username
             const status = req.params.status
@@ -161,7 +160,7 @@ class ApiController {
     }
 
     async getAll(req, res) {
-       
+
         try {
             const username = req.body.username
             const bills = await Bill.find({ username: username, delete: false }).lean()

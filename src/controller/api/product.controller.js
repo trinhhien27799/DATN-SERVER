@@ -9,9 +9,7 @@ class ApiController {
     async getAll(req, res) {
         try {
             const products = await Product.find({ delete: false }).sort({ time: -1 }).lean()
-            if (!products) {
-                throw "Không tìm thấy sản phẩm"
-            }
+            if (!products) throw "Không tìm thấy sản phẩm"
             await Promise.all(products.map(async (item) => {
                 await Promise.all([
                     (async () => {

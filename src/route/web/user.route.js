@@ -16,6 +16,8 @@ router.get('/insert', checkAdmin, controller.insert)
 router.post('/insert', checkAdmin, controller.insert)
 router.delete('/delete/:id', checkAdmin, controller.delete)
 
+router.get('/dashboard', controller.dashboard);
+
 
 
 

@@ -8,14 +8,14 @@ const TypeProduct = require('../../model/typeProduct')
 
 class ApiController {
     async add(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         const product_id = req.body.product_id
         try {
-            const favoriteFind = await Favorite.findOne({ username: username, product_id: product_id })
+            const favoriteFind = await Favorite.findOne({ userId: userId, product_id: product_id })
             if (favoriteFind) {
                 throw "Sản phẩm đã tồn tại trong danh sách yêu thích"
             }
-            const favorite = await Favorite.create({ username: username, product_id: product_id })
+            const favorite = await Favorite.create({ userId: userId, product_id: product_id })
             if (!favorite) {
                 throw "Thêm danh sách yêu thích thất bại"
             }
@@ -27,27 +27,15 @@ class ApiController {
     }
 
     async getAll(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         try {
-            const favorite = await Favorite.find({ username: username })
-            if (!favorite) {
-                throw "Không tìm thấy bản ghi danh sách yêu thích"
-            }
+            const favorite = await Favorite.find({ userId: userId })
+            if (!favorite) throw "Không tìm thấy bản ghi danh sách yêu thích"
             var list_favorite = []
             await Promise.all(favorite.map(async (item) => {
                 let product = await Product.find({ _id: item.product_id, delete: false }).lean()
+                if (!product) return
                 await Promise.all([
-                    (async () => {
-                        const variations = await Variations.find({ productId: product._id, delete: false, quantity: { $gt: 0 } }).lean()
-                        if (variations) {
-                            variations.forEach((item) => {
-                                delete item.productId
-                                delete item.__v
-                                delete item.delete
-                            })
-                            product.variations = variations
-                        }
-                    })(),
                     (async () => {
                         const type_product = await TypeProduct.findById(product.product_type_id)
                         if (type_product) {
@@ -64,19 +52,8 @@ class ApiController {
                             product.brand_logo = brand.image
                         }
                     })(),
-                    (async () => {
-                        const description = await Description.find({ id_follow: product._id }).lean()
-                        if (description) {
-                            description.forEach((item) => {
-                                delete item._id
-                                delete item.id_follow
-                                delete item.__v
-                            })
-                            product.description = description
-                        }
-                    })(),
                 ])
-                if (product) list_favorite.push(product)
+                list_favorite.push(product)
             }))
             res.json(list_favorite)
         } catch (error) {
@@ -86,10 +63,10 @@ class ApiController {
     }
 
     async delete(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         const product_id = req.body.product_id
         try {
-            const favorite = await Favorite.findOneAndDelete({ username: username, product_id: product_id })
+            const favorite = await Favorite.findOneAndDelete({ userId: userId, product_id: product_id })
             if (!favorite) {
                 throw "Không tìm thấy danh sách yêu thích"
             }
@@ -101,10 +78,10 @@ class ApiController {
     }
 
     async check(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         const product_id = req.body.product_id
         try {
-            const favorite = await Favorite.findOne({ username: username, product_id: product_id })
+            const favorite = await Favorite.findOne({ userId: userId, product_id: product_id })
             res.json(!(!favorite))
         } catch (error) {
             console.log(error)

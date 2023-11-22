@@ -19,9 +19,9 @@ class ApiController {
     }
     
     async getAllByUser(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         try {
-            const voucherUser = await Voucher.find({ username: username })
+            const voucherUser = await Voucher.find({ userId: userId })
             let listId = []
             if (!voucherUser) {
                 voucherUser.map((item) => listId.push(item._id))
@@ -38,10 +38,10 @@ class ApiController {
     }
 
     async get(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         try {
             const currentDate = new Date()
-            const vouchers = await Voucher.find({ username: username, used: false, expiration_date: { $gt: currentDate } }).sort({ expiration_date: -1 })
+            const vouchers = await Voucher.find({ userId: userId, used: false, expiration_date: { $gt: currentDate } }).sort({ expiration_date: -1 })
             if (!vouchers) {
                 throw "Không tìm thấy voucher"
             }
@@ -53,11 +53,11 @@ class ApiController {
     }
 
     async add(req, res) {
-        const username = req.body.username
+        const userId = req.body.userId
         const voucherCode = req.body.voucherCode
         const voucherId = req.body.voucherId
         try {
-            const voucherUser = await Voucher.findOne({ username: username, code: voucherCode })
+            const voucherUser = await Voucher.findOne({ userId: userId, code: voucherCode })
             if (voucherUser) {
                 throw "Voucher đã thêm trước đó"
             }
@@ -67,7 +67,7 @@ class ApiController {
                 throw "Không tìm thấy voucher muốn thêm hoặc đã hết hạn"
             }
             delete voucher._id
-            voucher.username = username
+            voucher.userId = userId
             const addVoucher = await Voucher.create(voucher)
             if (!addVoucher) {
                 throw "Thêm thất bại"

@@ -57,7 +57,7 @@ function route(app) {
         res.redirect('/user/login')
     })
 
-
+   
 
     app.use('/user', userWeb)
     app.use('/product', productWeb)

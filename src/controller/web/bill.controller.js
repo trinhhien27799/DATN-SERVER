@@ -29,7 +29,8 @@ class Controller {
           }
         }
       }
-      res.render("bill/viewBill", { layout: "layouts/main", data: array, amount, amount2 });
+      console.log(array);
+      res.render("bill/viewBill", { layout: "layouts/main", data: array, amount, amount2, req });
     } catch (error) {
       res.json(error);
     }
@@ -54,7 +55,7 @@ class Controller {
         bill.status = 2;
       }
       await bill.save();
-      res.redirect('/bill');
+      res.redirect(`/bill/?status=${bill.status - 1}`);
       await Promise.all(bill.products.map(async (item) => {
         const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
         // if (cacheCheck) {

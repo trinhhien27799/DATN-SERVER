@@ -1,13 +1,15 @@
 const Bill = require("../../model/bill");
 const Cache = require('../../model/Cache');
 const Variations = require("../../model/variations");
-require("dotenv").config;
 
 
 class Controller {
   async list(req, res) {
     try {
-      const array = await Bill.find();
+      const array = await Bill.find({status: req.query.status});
+
+      const amount = await Bill.find({status: 0});
+      const amount2 = await Bill.find({status: 1});
 
       for (let i = 0; i < array.length; i++) {
 
@@ -22,15 +24,12 @@ class Controller {
             case 2:
               array[i].statusText = "Delivered"
               break;
-            case 3:
-              array[i].statusText = "Received"
-              break;
             default:
               break;
           }
         }
       }
-      res.render("bill/viewBill", { layout: "layouts/main", data: array });
+      res.render("bill/viewBill", { layout: "layouts/main", data: array, amount, amount2 });
     } catch (error) {
       res.json(error);
     }
@@ -49,23 +48,31 @@ class Controller {
     try {
       const id = req.params.id;
       const bill = await Bill.findById(id);
-      if (!bill) throw "Không tìm thấy hóa đơn"
-      bill.status += 1;
+      if (bill && bill.status == 0) {
+        bill.status = 1;
+      }else if (bill && bill.status == 1) {
+        bill.status = 2;
+      }
       await bill.save();
       res.redirect('/bill');
-      if (bill.status == 2) {
-        await Promise.all(bill.products.map(async (item) => {
-          const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
-          if (cacheCheck) {
-            await cacheCheck.deleteOne()
-            await Cache.create({ username: cacheCheck.username, varitationId: cacheCheck.varitationId, productId: cacheCheck.productId })
-          } else {
-            const variations = await Variations.findById(item.variations_id)
-            await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
-          }
-        }))
-      }
+      await Promise.all(bill.products.map(async (item) => {
+        const cacheCheck = await Cache.findOne({ username: bill.username, varitationId: item.variations_id })
+        // if (cacheCheck) {
+        //   await cacheCheck.deleteOne()
+        //   await Cache.create(cacheCheck)
+        // } else {
+        //   const variations = await Variations.findById(item.variations_id)
+        //   await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
+        // }
+
+        if (!cacheCheck) {
+          const variations = await Variations.findById(item.variations_id)
+          await Cache.create({ username: bill.username, productId: variations.productId, varitationId: item.variations_id })
+        }
+      }))
+
     } catch (error) {
+      console.log(error);
       res.json(error);
     }
   }

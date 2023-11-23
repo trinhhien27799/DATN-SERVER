@@ -46,7 +46,6 @@
         <div class="col">
             <label for="product_type">Chọn hãng sản phẩm:</label>
             <select class="form-select" id="brand_id" name="brand_id">
-                <option value="">Trống</option>
                 <% for(let i=0; i < brand.length; i++) { %>
                     <option value="<%=brand[i]._id%>" <%=brand[i]._id==product.brand_id ? 'selected' :'' %> ><%=
                             brand[i].brand %>

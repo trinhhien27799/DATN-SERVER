@@ -10,14 +10,15 @@ router.get('/register', controller.pageRegister)
 router.post('/register/send-code/:email', controller.sendOtp)
 router.post('/register', controller.register)
 
-router.get('/', checkAdmin, controller.list)
-router.get('/detail/:id', checkAdmin, controller.detail)
-router.get('/insert', checkAdmin, controller.insert)
-router.post('/insert', checkAdmin, controller.insert)
-router.delete('/delete/:id', checkAdmin, controller.delete)
+router.use(checkAdmin);
 
-router.get('/dashboard', controller.dashboard);
+router.get('/', controller.list)
+router.get('/detail/:id', controller.detail)
+router.get('/insert', controller.insert)
+router.post('/insert', controller.insert)
+router.delete('/delete/:id', controller.delete)
 
+router.get('/logout', controller.logout)
 
 
 

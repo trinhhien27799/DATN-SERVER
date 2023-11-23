@@ -2,7 +2,9 @@ var express = require('express')
 var controller = require('../../controller/web/voucher.controller')
 var router = express.Router()
 const upload = require('../../utils/handleFile')
+const { checkAdmin } = require('../../midleware/authentication')
 
+router.use(checkAdmin);
 
 router.get('/', controller.list);
 router.get('/detail/:id', controller.detail);

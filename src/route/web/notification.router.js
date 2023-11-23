@@ -2,7 +2,9 @@ const express = require('express')
 const controller = require('../../controller/web/notification.controller')
 const router = express.Router()
 const upload = require('../../utils/handleFile')
+const { checkAdmin } = require('../../midleware/authentication')
 
+router.use(checkAdmin);
 
 router.get('/', controller.list);
 router.get('/detail/:id', controller.detail);

@@ -19,7 +19,7 @@ class Controller {
         if (type_product) {
           item.product_type = type_product.name
         }
-        if (!item.product_type_id) {
+        if (item.brand_id) {
           const brand = await Brand.findById(item.brand_id)
           if (brand) {
             item.brand_name = brand.brand

@@ -15,8 +15,8 @@ const Bill = new Schema({
     shipping_method: { type: String, require: true },//phương thức vận chuyển
     payment_method: { type: String, require: true,default:"Thanh toán khi nhận hàng" },//phương thức thanh toán
     voucher: { type: Number },//giá trị voucher
-    total_price: { type: Number, require: true },//tổng tiền
-    import_total: { type: Number},//tổng tiền
+    total_price: { type: Number, require: true },//tổng tiền thu
+    import_total: { type: Number},//tổng tiền chi
     status: { type: Number, default: 0 },//trạng thái đơn
     note: { type: String },
     time: { type: Date, default: Date.now },

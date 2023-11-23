@@ -14,7 +14,7 @@ const brandApi = require('./api/brand.route')
 const typeApi = require('./api/type.route')
 const shippingApi = require('./api/shipping.route')
 const commentApi = require('./api/comment.route')
-
+const messageApi = require('./api/message.route')
 //route web
 
 const userWeb = require('./web/user.route')
@@ -47,7 +47,7 @@ function route(app) {
     app.use('/api/type-product', typeApi) // Loại sản phẩm
     app.use('/api/shipping', shippingApi) // Loại vận chuyển
     app.use('/api/comment', commentApi)
-
+    app.use('/api/message', messageApi)
 
 
     //web

@@ -146,12 +146,12 @@ class ApiController {
     }
 
     async loginWithToken(req, res) {
-        const token = req.body.token
         try {
+            const token = req.body.token
             const account = await jwt.verify(token, SECRECT)
-            const user = await User.findOne({ username: account.username, role: false, enable: true }).lean()
-            if (!user)
-                return res.json({ code: 404, message: "Token không hợp lệ" })
+            if(!account) throw "Token Không hợp lệ"
+            const user = await User.findOne({ _id: account.userId, role: false, enable: true }).lean()
+            if (!user) return res.json({ code: 404, message: "Token không hợp lệ" })
             const matches = await bcrypt.compare(account.password, user.password)
             if (matches != true)
                 throw "Token hết hạn"
